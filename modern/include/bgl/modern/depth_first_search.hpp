@@ -432,6 +432,54 @@ void dfs_impl_all(
     dfs_impl_all(g, result, dfs_callbacks{});
 }
 
+/// Multi-source DFS implementation with callbacks
+template<typename G, std::ranges::input_range Sources, typename Callbacks>
+    requires std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+void dfs_impl_multi(
+    const G& g,
+    Sources&& sources,
+    dfs_result<G>& result,
+    Callbacks&& callbacks
+) {
+    using vertex_descriptor = vertex_descriptor_t<G>;
+    
+    auto color = result.color_map();
+    auto pred = result.predecessor_map();
+    std::size_t time = 0;
+    
+    // Initialize all vertices
+    for (auto v : vertices(g)) {
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_initialize_vertex)>, null_callback>) {
+            callbacks.on_initialize_vertex(v, g);
+        }
+    }
+    
+    // Visit each source in order
+    for (auto s : sources) {
+        vertex_descriptor source = static_cast<vertex_descriptor>(s);
+        if (color(source) == vertex_color::white) {
+            // Start vertex callback
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_start_vertex)>, null_callback>) {
+                callbacks.on_start_vertex(source, g);
+            }
+            
+            pred(source) = source;  // Root of this tree
+            dfs_visit_with_callbacks(g, source, result, time, callbacks);
+        }
+    }
+}
+
+/// Multi-source DFS without callbacks
+template<typename G, std::ranges::input_range Sources>
+    requires std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+void dfs_impl_multi(
+    const G& g,
+    Sources&& sources,
+    dfs_result<G>& result
+) {
+    dfs_impl_multi(g, std::forward<Sources>(sources), result, dfs_callbacks{});
+}
+
 } // namespace detail
 
 // =============================================================================
@@ -637,6 +685,87 @@ auto depth_first_search(
 ) {
     auto result = make_dfs_result(g);
     detail::dfs_impl_all(g, result, callbacks);
+    return result;
+}
+
+// =============================================================================
+// depth_first_search - Multi-Source Overloads (Range-Based)
+// =============================================================================
+
+/// Perform depth-first search from multiple source vertices.
+///
+/// This overload accepts a range of source vertices, enabling multi-source DFS.
+/// Each source that hasn't been visited becomes a new tree root in the DFS forest.
+/// This is useful for:
+/// - Starting DFS from a specific subset of vertices
+/// - Processing vertices in a custom order
+/// - Combining with std::views::filter for conditional traversal
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+/// - Sources must be a range of vertex descriptors (or convertible to them)
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param sources Range of source vertices (e.g., vector, array, views::filter result)
+/// @return dfs_result containing DFS forest information
+///
+/// Example:
+/// @code
+///     // Multi-source DFS from vertices 0 and 5
+///     auto result = depth_first_search(g, std::vector{0, 5});
+///     
+///     // DFS from all even-numbered vertices first
+///     auto evens = vertices(g) | std::views::filter([](auto v) { return v % 2 == 0; });
+///     auto result2 = depth_first_search(g, evens);
+/// @endcode
+///
+template<typename G, std::ranges::input_range Sources>
+    requires VertexListGraph<G> && IncidenceGraph<G> &&
+             std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+auto depth_first_search(const G& g, Sources&& sources) {
+    auto result = make_dfs_result(g);
+    detail::dfs_impl_multi(g, std::forward<Sources>(sources), result);
+    return result;
+}
+
+/// Perform multi-source depth-first search with visitor callbacks.
+///
+/// This overload combines multi-source DFS with event-driven callbacks.
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+/// - Sources must be a range of vertex descriptors
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param sources Range of source vertices
+/// @param callbacks Visitor callbacks for DFS events
+/// @return dfs_result containing DFS forest information
+///
+/// Example:
+/// @code
+///     std::vector<int> order;
+///     auto sources = std::vector{0, 5};
+///     auto result = depth_first_search(g, sources, 
+///         on_discover_vertex([&](auto v, const auto&) {
+///             order.push_back(v);
+///         })
+///     );
+/// @endcode
+///
+template<typename G, std::ranges::input_range Sources, typename... CallbackTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G> &&
+             std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+auto depth_first_search(
+    const G& g, 
+    Sources&& sources,
+    const dfs_callbacks<CallbackTypes...>& callbacks
+) {
+    auto result = make_dfs_result(g);
+    detail::dfs_impl_multi(g, std::forward<Sources>(sources), result, callbacks);
     return result;
 }
 

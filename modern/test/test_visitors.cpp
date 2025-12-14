@@ -12,6 +12,7 @@
 #include <iostream>
 #include <cassert>
 #include <iterator>
+#include <ranges>
 
 // Test graph implementation
 namespace test {
@@ -319,6 +320,172 @@ void test_on_finish_vertex_shorthand() {
 
 } // anonymous namespace
 
+// =============================================================================
+// Multi-Source Tests (Phase 2.4: Range-Based Algorithm Variants)
+// =============================================================================
+
+namespace {
+
+void test_multi_source_bfs_vector() {
+    // Test multi-source BFS with a vector of sources
+    //
+    // Graph:  0 -> 1 -> 2
+    //         3 -> 4 -> 5
+    //
+    // Two disconnected components
+    test::simple_graph g(6);
+    g.add_edge(0, 1);
+    g.add_edge(1, 2);
+    g.add_edge(3, 4);
+    g.add_edge(4, 5);
+    
+    std::vector<std::size_t> sources = {0, 3};
+    auto result = bgl::breadth_first_search(g, sources);
+    
+    // All 6 vertices should be discovered
+    assert(result.discovered_vertices().size() == 6);
+    
+    // Distance from sources should be 0
+    assert(result.distance_to(0) == 0);
+    assert(result.distance_to(3) == 0);
+    
+    // Distances from sources should be correct
+    assert(result.distance_to(1) == 1);  // 0 -> 1
+    assert(result.distance_to(2) == 2);  // 0 -> 1 -> 2
+    assert(result.distance_to(4) == 1);  // 3 -> 4
+    assert(result.distance_to(5) == 2);  // 3 -> 4 -> 5
+    
+    std::cout << "  multi_source_bfs_vector: PASSED\n";
+}
+
+void test_multi_source_bfs_with_callbacks() {
+    test::simple_graph g(4);
+    g.add_edge(0, 1);
+    g.add_edge(2, 3);
+    
+    std::vector<std::size_t> discovered;
+    std::vector<std::size_t> sources = {0, 2};
+    
+    auto result = bgl::breadth_first_search(g, sources,
+        bgl::on_discover_vertex([&](auto v, const auto&) {
+            discovered.push_back(v);
+        })
+    );
+    
+    assert(discovered.size() == 4);
+    // Sources discovered first (in order)
+    assert(discovered[0] == 0);
+    assert(discovered[1] == 2);
+    // Then their neighbors
+    assert(discovered[2] == 1);
+    assert(discovered[3] == 3);
+    
+    std::cout << "  multi_source_bfs_with_callbacks: PASSED\n";
+}
+
+void test_multi_source_bfs_views_filter() {
+    // Test that std::views::filter works as input
+    test::simple_graph g(5);
+    g.add_edge(0, 1);
+    g.add_edge(2, 3);
+    g.add_edge(4, 0);
+    
+    // Use views::filter to select even vertices as sources
+    auto even_vertices = test::vertices(g) 
+        | std::views::filter([](auto v) { return v % 2 == 0; });
+    
+    auto result = bgl::breadth_first_search(g, even_vertices);
+    
+    // All vertices reachable from even vertices should be discovered
+    // Sources: 0, 2, 4
+    // From 0: reach 1
+    // From 2: reach 3
+    // From 4: 0 already visited
+    assert(result.discovered_vertices().size() == 5);
+    
+    // Even vertices should have distance 0
+    assert(result.distance_to(0) == 0);
+    assert(result.distance_to(2) == 0);
+    assert(result.distance_to(4) == 0);
+    
+    std::cout << "  multi_source_bfs_views_filter: PASSED\n";
+}
+
+void test_multi_source_dfs_vector() {
+    // Test multi-source DFS with a vector of sources
+    test::simple_graph g(6);
+    g.add_edge(0, 1);
+    g.add_edge(1, 2);
+    g.add_edge(3, 4);
+    g.add_edge(4, 5);
+    
+    std::vector<std::size_t> sources = {0, 3};
+    auto result = bgl::depth_first_search(g, sources);
+    
+    // All 6 vertices should be discovered
+    assert(result.discovered_vertices().size() == 6);
+    
+    // Check discovery times are sequential
+    assert(result.discovery_time(0) == 0);
+    assert(result.discovery_time(1) == 1);
+    assert(result.discovery_time(2) == 2);
+    // After finishing first component, start second
+    assert(result.discovery_time(3) == 6);
+    
+    std::cout << "  multi_source_dfs_vector: PASSED\n";
+}
+
+void test_multi_source_dfs_with_callbacks() {
+    test::simple_graph g(4);
+    g.add_edge(0, 1);
+    g.add_edge(2, 3);
+    
+    std::vector<std::size_t> finish_order;
+    std::vector<std::size_t> sources = {0, 2};
+    
+    auto result = bgl::depth_first_search(g, sources,
+        bgl::on_finish_vertex([&](auto v, const auto&) {
+            finish_order.push_back(v);
+        })
+    );
+    
+    // DFS finishes deepest first
+    assert(finish_order.size() == 4);
+    assert(finish_order[0] == 1);  // leaf of first tree
+    assert(finish_order[1] == 0);  // root of first tree
+    assert(finish_order[2] == 3);  // leaf of second tree
+    assert(finish_order[3] == 2);  // root of second tree
+    
+    std::cout << "  multi_source_dfs_with_callbacks: PASSED\n";
+}
+
+void test_multi_source_dfs_views_filter() {
+    // Test that std::views::filter works as input
+    test::simple_graph g(5);
+    g.add_edge(0, 1);
+    g.add_edge(2, 3);
+    g.add_edge(4, 0);
+    
+    // Use views::filter to select even vertices as sources
+    auto even_vertices = test::vertices(g) 
+        | std::views::filter([](auto v) { return v % 2 == 0; });
+    
+    std::vector<std::size_t> start_vertices;
+    auto result = bgl::depth_first_search(g, even_vertices,
+        bgl::on_start_vertex([&](auto v, const auto&) {
+            start_vertices.push_back(v);
+        })
+    );
+    
+    // Sources 0, 2, 4 - but 0 might be visited from 4 first
+    // Source iteration: 0 first (if white), then 2, then 4 if still white
+    assert(start_vertices.size() >= 2);
+    
+    std::cout << "  multi_source_dfs_views_filter: PASSED\n";
+}
+
+} // anonymous namespace
+
 int main() {
     std::cout << "BGL Modern Visitor Callbacks Tests\n";
     std::cout << "===================================\n\n";
@@ -341,6 +508,14 @@ int main() {
     test_on_start_vertex_shorthand();
     test_on_examine_edge_shorthand();
     test_on_finish_vertex_shorthand();
+    
+    std::cout << "\nMulti-Source (Range-Based):\n";
+    test_multi_source_bfs_vector();
+    test_multi_source_bfs_with_callbacks();
+    test_multi_source_bfs_views_filter();
+    test_multi_source_dfs_vector();
+    test_multi_source_dfs_with_callbacks();
+    test_multi_source_dfs_views_filter();
     
     std::cout << "\n===================================\n";
     std::cout << "All visitor callback tests passed!\n";

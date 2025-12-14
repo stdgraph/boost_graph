@@ -366,6 +366,123 @@ void bfs_impl(
     bfs_impl(g, start, result, bfs_callbacks{});
 }
 
+/// Multi-source BFS implementation with visitor callbacks
+template<typename G, std::ranges::input_range Sources, typename Callbacks>
+    requires std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+void bfs_impl_multi(
+    const G& g,
+    Sources&& sources,
+    bfs_result<G>& result,
+    Callbacks&& callbacks
+) {
+    using vertex_descriptor = vertex_descriptor_t<G>;
+    
+    std::queue<vertex_descriptor> queue;
+    
+    auto dist = result.distance_map();
+    auto pred = result.predecessor_map();
+    auto color = result.color_map();
+    
+    // Initialize all vertices
+    for (auto v : vertices(g)) {
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_initialize_vertex)>, null_callback>) {
+            callbacks.on_initialize_vertex(v, g);
+        }
+    }
+    
+    // Initialize all source vertices with distance 0
+    for (auto s : sources) {
+        vertex_descriptor source = static_cast<vertex_descriptor>(s);
+        if (color(source) == vertex_color::white) {
+            color(source) = vertex_color::gray;
+            dist(source) = 0;
+            pred(source) = source;
+            result.discover_vertex(source);
+            
+            // Discover source vertex callback
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_discover_vertex)>, null_callback>) {
+                callbacks.on_discover_vertex(source, g);
+            }
+            
+            queue.push(source);
+        }
+    }
+    
+    while (!queue.empty()) {
+        vertex_descriptor u = queue.front();
+        queue.pop();
+        
+        // Examine vertex callback
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_examine_vertex)>, null_callback>) {
+            callbacks.on_examine_vertex(u, g);
+        }
+        
+        for (auto e : out_edges(u, g)) {
+            vertex_descriptor v = target(e, g);
+            
+            // Examine edge callback
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_examine_edge)>, null_callback>) {
+                callbacks.on_examine_edge(e, g);
+            }
+            
+            if (color(v) == vertex_color::white) {
+                // Tree edge callback
+                if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_tree_edge)>, null_callback>) {
+                    callbacks.on_tree_edge(e, g);
+                }
+                
+                // Discovered a new vertex
+                color(v) = vertex_color::gray;
+                dist(v) = dist(u) + 1;
+                pred(v) = u;
+                result.discover_vertex(v);
+                
+                // Discover vertex callback
+                if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_discover_vertex)>, null_callback>) {
+                    callbacks.on_discover_vertex(v, g);
+                }
+                
+                queue.push(v);
+            } else {
+                // Non-tree edge callback
+                if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_non_tree_edge)>, null_callback>) {
+                    callbacks.on_non_tree_edge(e, g);
+                }
+                
+                if (color(v) == vertex_color::gray) {
+                    // Gray target callback
+                    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_gray_target)>, null_callback>) {
+                        callbacks.on_gray_target(e, g);
+                    }
+                } else {
+                    // Black target callback
+                    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_black_target)>, null_callback>) {
+                        callbacks.on_black_target(e, g);
+                    }
+                }
+            }
+        }
+        
+        color(u) = vertex_color::black;
+        
+        // Finish vertex callback
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_finish_vertex)>, null_callback>) {
+            callbacks.on_finish_vertex(u, g);
+        }
+    }
+}
+
+/// Multi-source BFS without callbacks
+template<typename G, std::ranges::input_range Sources>
+    requires std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+void bfs_impl_multi(
+    const G& g,
+    Sources&& sources,
+    bfs_result<G>& result
+) {
+    bfs_impl_multi(g, std::forward<Sources>(sources), result, bfs_callbacks{});
+}
+
 } // namespace detail
 
 // =============================================================================
@@ -493,6 +610,89 @@ auto breadth_first_search(
 ) {
     auto result = make_bfs_result(g, source);
     detail::bfs_impl(g, source, result, callbacks);
+    return result;
+}
+
+// =============================================================================
+// breadth_first_search - Multi-Source Overloads (Range-Based)
+// =============================================================================
+
+/// Perform breadth-first search from multiple source vertices.
+///
+/// This overload accepts a range of source vertices, enabling multi-source BFS.
+/// All sources are initialized with distance 0 and discovered simultaneously.
+/// This is useful for:
+/// - Finding shortest paths from any of multiple starting points
+/// - Computing distance from a set of "boundary" vertices
+/// - Parallel-style BFS from filtered subsets
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+/// - Sources must be a range of vertex descriptors (or convertible to them)
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param sources Range of source vertices (e.g., vector, array, views::filter result)
+/// @return bfs_result containing BFS tree information
+///
+/// Example:
+/// @code
+///     // Multi-source BFS from vertices 0 and 5
+///     auto result = breadth_first_search(g, std::vector{0, 5});
+///     
+///     // BFS from all even-numbered vertices
+///     auto evens = vertices(g) | std::views::filter([](auto v) { return v % 2 == 0; });
+///     auto result2 = breadth_first_search(g, evens);
+/// @endcode
+///
+template<typename G, std::ranges::input_range Sources>
+    requires VertexListGraph<G> && IncidenceGraph<G> &&
+             std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+auto breadth_first_search(const G& g, Sources&& sources) {
+    // For multi-source BFS, we don't have a single source
+    auto result = make_bfs_result(g);
+    detail::bfs_impl_multi(g, std::forward<Sources>(sources), result);
+    return result;
+}
+
+/// Perform multi-source breadth-first search with visitor callbacks.
+///
+/// This overload combines multi-source BFS with event-driven callbacks.
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+/// - Sources must be a range of vertex descriptors
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param sources Range of source vertices
+/// @param callbacks Visitor callbacks for BFS events
+/// @return bfs_result containing BFS tree information
+///
+/// Example:
+/// @code
+///     std::vector<int> order;
+///     auto sources = std::vector{0, 5};
+///     auto result = breadth_first_search(g, sources, 
+///         on_discover_vertex([&](auto v, const auto&) {
+///             order.push_back(v);
+///         })
+///     );
+/// @endcode
+///
+template<typename G, std::ranges::input_range Sources, typename... CallbackTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G> &&
+             std::convertible_to<std::ranges::range_value_t<Sources>, vertex_descriptor_t<G>>
+auto breadth_first_search(
+    const G& g, 
+    Sources&& sources,
+    const bfs_callbacks<CallbackTypes...>& callbacks
+) {
+    // For multi-source BFS, we don't have a single source
+    auto result = make_bfs_result(g);
+    detail::bfs_impl_multi(g, std::forward<Sources>(sources), result, callbacks);
     return result;
 }
 
