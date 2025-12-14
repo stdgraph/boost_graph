@@ -118,4 +118,9 @@ add_executable(test_validation test_validation.cpp)
 target_link_libraries(test_validation PRIVATE bgl::modern)
 add_test(NAME validation COMMAND test_validation)
 
+# Concept checking test (static assertions)
+add_executable(test_concept_checking test_concept_checking.cpp)
+target_link_libraries(test_concept_checking PRIVATE bgl::modern)
+add_test(NAME concept_checking COMMAND test_concept_checking)
+
 message(STATUS "BGL Modern tests configured")
