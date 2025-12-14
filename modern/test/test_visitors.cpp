@@ -260,6 +260,63 @@ void test_on_back_edge_shorthand() {
     std::cout << "  on_back_edge shorthand: PASSED\n";
 }
 
+void test_on_start_vertex_shorthand() {
+    test::simple_graph g(4);
+    g.add_edge(0, 1);
+    g.add_edge(2, 3);  // Disconnected component
+    
+    int start_count = 0;
+    
+    // Test all-vertices DFS with start_vertex callback
+    bgl::depth_first_search(g,
+        bgl::on_start_vertex([&](auto, const auto&) {
+            ++start_count;
+        })
+    );
+    
+    assert(start_count == 2);  // Two DFS trees (disconnected)
+    std::cout << "  on_start_vertex shorthand: PASSED\n";
+}
+
+void test_on_examine_edge_shorthand() {
+    test::simple_graph g(3);
+    g.add_edge(0, 1);
+    g.add_edge(0, 2);
+    g.add_edge(1, 2);
+    
+    int edge_count = 0;
+    
+    bgl::breadth_first_search(g, std::size_t{0},
+        bgl::on_examine_edge([&](auto, const auto&) {
+            ++edge_count;
+        })
+    );
+    
+    assert(edge_count == 3);  // All 3 edges examined
+    std::cout << "  on_examine_edge shorthand: PASSED\n";
+}
+
+void test_on_finish_vertex_shorthand() {
+    test::simple_graph g(3);
+    g.add_edge(0, 1);
+    g.add_edge(1, 2);
+    
+    std::vector<std::size_t> finish_order;
+    
+    bgl::depth_first_search(g, std::size_t{0},
+        bgl::on_finish_vertex([&](auto v, const auto&) {
+            finish_order.push_back(v);
+        })
+    );
+    
+    // DFS finishes deepest first: 2, 1, 0
+    assert(finish_order.size() == 3);
+    assert(finish_order[0] == 2);
+    assert(finish_order[1] == 1);
+    assert(finish_order[2] == 0);
+    std::cout << "  on_finish_vertex shorthand: PASSED\n";
+}
+
 } // anonymous namespace
 
 int main() {
@@ -281,6 +338,9 @@ int main() {
     std::cout << "\nSingle-Event Shorthand:\n";
     test_on_discover_vertex_shorthand();
     test_on_back_edge_shorthand();
+    test_on_start_vertex_shorthand();
+    test_on_examine_edge_shorthand();
+    test_on_finish_vertex_shorthand();
     
     std::cout << "\n===================================\n";
     std::cout << "All visitor callback tests passed!\n";

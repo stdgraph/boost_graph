@@ -409,6 +409,42 @@ auto on_finish_vertex(F&& f) {
     };
 }
 
+/// Create a DFS callbacks struct with only on_start_vertex set
+template<typename F>
+auto on_start_vertex(F&& f) {
+    return dfs_callbacks<
+        null_callback,  // initialize_vertex
+        std::decay_t<F>, // start_vertex
+        null_callback,  // discover_vertex
+        null_callback,  // examine_edge
+        null_callback,  // tree_edge
+        null_callback,  // back_edge
+        null_callback,  // forward_or_cross_edge
+        null_callback,  // finish_edge
+        null_callback   // finish_vertex
+    >{
+        .on_start_vertex = std::forward<F>(f)
+    };
+}
+
+/// Create a BFS callbacks struct with only on_examine_edge set
+template<typename F>
+auto on_examine_edge(F&& f) {
+    return bfs_callbacks<
+        null_callback,  // initialize_vertex
+        null_callback,  // discover_vertex
+        null_callback,  // examine_vertex
+        std::decay_t<F>, // examine_edge
+        null_callback,  // tree_edge
+        null_callback,  // non_tree_edge
+        null_callback,  // gray_target
+        null_callback,  // black_target
+        null_callback   // finish_vertex
+    >{
+        .on_examine_edge = std::forward<F>(f)
+    };
+}
+
 // =============================================================================
 // Visitor Concepts
 // =============================================================================
