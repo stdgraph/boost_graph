@@ -123,4 +123,9 @@ add_executable(test_concept_checking test_concept_checking.cpp)
 target_link_libraries(test_concept_checking PRIVATE bgl::modern)
 add_test(NAME concept_checking COMMAND test_concept_checking)
 
+# Ranges integration test
+add_executable(test_ranges_integration test_ranges_integration.cpp)
+target_link_libraries(test_ranges_integration PRIVATE bgl::modern)
+add_test(NAME ranges_integration COMMAND test_ranges_integration)
+
 message(STATUS "BGL Modern tests configured")
