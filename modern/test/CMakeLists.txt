@@ -73,4 +73,9 @@ add_executable(test_connectivity test_connectivity.cpp)
 target_link_libraries(test_connectivity PRIVATE bgl::modern)
 add_test(NAME connectivity COMMAND test_connectivity)
 
+# Adjacency list container test
+add_executable(test_adjacency_list test_adjacency_list.cpp)
+target_link_libraries(test_adjacency_list PRIVATE bgl::modern)
+add_test(NAME adjacency_list COMMAND test_adjacency_list)
+
 message(STATUS "BGL Modern tests configured")
