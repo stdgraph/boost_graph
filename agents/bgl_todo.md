@@ -38,11 +38,11 @@ This document outlines the phased implementation plan for modernizing the Boost 
 - [x] Verify compatibility with `std::ranges::for_each`, `std::views::filter`, etc.
 
 ### 1.5 Property Map Foundation
-- [ ] Define `PropertyMap` concept (`std::invocable<F, Key>` + `std::convertible_to<Value>`)
-- [ ] Define `ReadablePropertyMap`, `WritablePropertyMap`, `ReadWritePropertyMap` concepts
-- [ ] Implement `default_weight_accessor(g)` pattern (graph-capturing lambda)
-- [ ] Document descriptor types (integral index vs iterator) and container choices
-- [ ] Remove Boost.PropertyMap dependency from core headers
+- [x] Define `PropertyMap` concept (`std::invocable<F, Key>` + `std::convertible_to<Value>`)
+- [x] Define `ReadablePropertyMap`, `WritablePropertyMap`, `ReadWritePropertyMap` concepts
+- [x] Implement `default_weight_accessor(g)` pattern (graph-capturing lambda)
+- [x] Document descriptor types (integral index vs iterator) and container choices
+- [x] Remove Boost.PropertyMap dependency from core headers
 
 ---
 
@@ -51,10 +51,10 @@ This document outlines the phased implementation plan for modernizing the Boost 
 **Goal:** Modernize algorithm interfaces with ranges, structured returns, and lambda visitors.
 
 ### 2.1 Simplified Algorithm Interfaces
-- [ ] Define `dijkstra_result` struct (distances, predecessors maps)
-- [ ] Implement `dijkstra_shortest_paths(g, start)` returning `dijkstra_result`
-- [ ] Implement `dijkstra_shortest_paths(g, start, get_weight)` with custom property accessor
-- [ ] Apply same pattern to `bellman_ford_shortest_paths`
+- [x] Define `dijkstra_result` struct (distances, predecessors maps)
+- [x] Implement `dijkstra_shortest_paths(g, start)` returning `dijkstra_result`
+- [x] Implement `dijkstra_shortest_paths(g, start, get_weight)` with custom property accessor
+- [x] Apply same pattern to `bellman_ford_shortest_paths`
 - [ ] Apply same pattern to `bfs` / `dfs` (return visited order or tree)
 
 ### 2.2 Named Parameters via Designated Initializers

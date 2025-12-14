@@ -23,4 +23,34 @@ add_executable(test_range_functions test_range_functions.cpp)
 target_link_libraries(test_range_functions PRIVATE bgl::modern)
 add_test(NAME range_functions COMMAND test_range_functions)
 
+# Property map test
+add_executable(test_property_map test_property_map.cpp)
+target_link_libraries(test_property_map PRIVATE bgl::modern)
+add_test(NAME property_map COMMAND test_property_map)
+
+# Algorithm result test
+add_executable(test_algorithm_result test_algorithm_result.cpp)
+target_link_libraries(test_algorithm_result PRIVATE bgl::modern)
+add_test(NAME algorithm_result COMMAND test_algorithm_result)
+
+# Dijkstra shortest paths test
+add_executable(test_dijkstra test_dijkstra.cpp)
+target_link_libraries(test_dijkstra PRIVATE bgl::modern)
+add_test(NAME dijkstra COMMAND test_dijkstra)
+
+# Bellman-Ford shortest paths test
+add_executable(test_bellman_ford test_bellman_ford.cpp)
+target_link_libraries(test_bellman_ford PRIVATE bgl::modern)
+add_test(NAME bellman_ford COMMAND test_bellman_ford)
+
+# Breadth-first search test
+add_executable(test_bfs test_bfs.cpp)
+target_link_libraries(test_bfs PRIVATE bgl::modern)
+add_test(NAME bfs COMMAND test_bfs)
+
+# Depth-first search test
+add_executable(test_dfs test_dfs.cpp)
+target_link_libraries(test_dfs PRIVATE bgl::modern)
+add_test(NAME dfs COMMAND test_dfs)
+
 message(STATUS "BGL Modern tests configured")
