@@ -63,4 +63,9 @@ add_executable(test_visitors test_visitors.cpp)
 target_link_libraries(test_visitors PRIVATE bgl::modern)
 add_test(NAME visitors COMMAND test_visitors)
 
+# Minimum spanning tree test
+add_executable(test_mst test_mst.cpp)
+target_link_libraries(test_mst PRIVATE bgl::modern)
+add_test(NAME mst COMMAND test_mst)
+
 message(STATUS "BGL Modern tests configured")
