@@ -58,4 +58,9 @@ add_executable(test_algorithm_params test_algorithm_params.cpp)
 target_link_libraries(test_algorithm_params PRIVATE bgl::modern)
 add_test(NAME algorithm_params COMMAND test_algorithm_params)
 
+# Visitor callbacks test
+add_executable(test_visitors test_visitors.cpp)
+target_link_libraries(test_visitors PRIVATE bgl::modern)
+add_test(NAME visitors COMMAND test_visitors)
+
 message(STATUS "BGL Modern tests configured")

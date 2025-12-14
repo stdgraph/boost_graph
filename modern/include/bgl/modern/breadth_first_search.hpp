@@ -12,6 +12,7 @@
 #include <bgl/modern/concepts.hpp>
 #include <bgl/modern/graph_traits.hpp>
 #include <bgl/modern/algorithm_params.hpp>
+#include <bgl/modern/visitor_callbacks.hpp>
 
 #include <vector>
 #include <queue>
@@ -258,11 +259,13 @@ auto make_bfs_result(const G& g, vertex_descriptor_t<G> source) {
 
 namespace detail {
 
-template<typename G>
+/// BFS implementation with visitor callbacks
+template<typename G, typename Callbacks>
 void bfs_impl(
     const G& g,
     vertex_descriptor_t<G> start,
-    bfs_result<G>& result
+    bfs_result<G>& result,
+    Callbacks&& callbacks
 ) {
     using vertex_descriptor = vertex_descriptor_t<G>;
     
@@ -272,29 +275,95 @@ void bfs_impl(
     auto pred = result.predecessor_map();
     auto color = result.color_map();
     
+    // Initialize all vertices
+    for (auto v : vertices(g)) {
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_initialize_vertex)>, null_callback>) {
+            callbacks.on_initialize_vertex(v, g);
+        }
+    }
+    
     result.set_source(start);
     result.discover_vertex(start);
+    
+    // Discover source vertex callback
+    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_discover_vertex)>, null_callback>) {
+        callbacks.on_discover_vertex(start, g);
+    }
+    
     queue.push(start);
     
     while (!queue.empty()) {
         vertex_descriptor u = queue.front();
         queue.pop();
         
+        // Examine vertex callback
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_examine_vertex)>, null_callback>) {
+            callbacks.on_examine_vertex(u, g);
+        }
+        
         for (auto e : out_edges(u, g)) {
             vertex_descriptor v = target(e, g);
             
+            // Examine edge callback
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_examine_edge)>, null_callback>) {
+                callbacks.on_examine_edge(e, g);
+            }
+            
             if (color(v) == vertex_color::white) {
+                // Tree edge callback
+                if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_tree_edge)>, null_callback>) {
+                    callbacks.on_tree_edge(e, g);
+                }
+                
                 // Discovered a new vertex
                 color(v) = vertex_color::gray;
                 dist(v) = dist(u) + 1;
                 pred(v) = u;
                 result.discover_vertex(v);
+                
+                // Discover vertex callback
+                if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_discover_vertex)>, null_callback>) {
+                    callbacks.on_discover_vertex(v, g);
+                }
+                
                 queue.push(v);
+            } else {
+                // Non-tree edge callback
+                if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_non_tree_edge)>, null_callback>) {
+                    callbacks.on_non_tree_edge(e, g);
+                }
+                
+                if (color(v) == vertex_color::gray) {
+                    // Gray target callback
+                    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_gray_target)>, null_callback>) {
+                        callbacks.on_gray_target(e, g);
+                    }
+                } else {
+                    // Black target callback
+                    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_black_target)>, null_callback>) {
+                        callbacks.on_black_target(e, g);
+                    }
+                }
             }
         }
         
         color(u) = vertex_color::black;
+        
+        // Finish vertex callback
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_finish_vertex)>, null_callback>) {
+            callbacks.on_finish_vertex(u, g);
+        }
     }
+}
+
+/// BFS implementation without visitor (for backward compatibility)
+template<typename G>
+void bfs_impl(
+    const G& g,
+    vertex_descriptor_t<G> start,
+    bfs_result<G>& result
+) {
+    bfs_impl(g, start, result, bfs_callbacks{});
 }
 
 } // namespace detail
@@ -379,6 +448,51 @@ auto breadth_first_search(
     // but the interface is ready for visitor support (Phase 2.3)
     auto result = make_bfs_result(g, source);
     detail::bfs_impl(g, source, result);
+    return result;
+}
+
+// =============================================================================
+// breadth_first_search - Callbacks Overload
+// =============================================================================
+
+/// Perform breadth-first search with visitor callbacks.
+///
+/// This overload accepts a bfs_callbacks struct for event-driven processing
+/// during the BFS traversal.
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param source The source vertex
+/// @param callbacks Visitor callbacks for BFS events
+/// @return bfs_result containing BFS tree information
+///
+/// Example:
+/// @code
+///     std::vector<int> order;
+///     auto result = breadth_first_search(g, source, bfs_callbacks{
+///         .on_discover_vertex = [&](auto v, const auto&) {
+///             order.push_back(v);
+///         },
+///         .on_tree_edge = [](auto e, const auto& g) {
+///             std::cout << "Tree edge: " << source(e, g) 
+///                       << " -> " << target(e, g) << "\n";
+///         }
+///     });
+/// @endcode
+///
+template<typename G, typename... CallbackTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G>
+auto breadth_first_search(
+    const G& g,
+    vertex_descriptor_t<G> source,
+    const bfs_callbacks<CallbackTypes...>& callbacks
+) {
+    auto result = make_bfs_result(g, source);
+    detail::bfs_impl(g, source, result, callbacks);
     return result;
 }
 

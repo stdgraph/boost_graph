@@ -13,6 +13,7 @@
 #include <bgl/modern/graph_traits.hpp>
 #include <bgl/modern/breadth_first_search.hpp>  // For vertex_color
 #include <bgl/modern/algorithm_params.hpp>
+#include <bgl/modern/visitor_callbacks.hpp>
 
 #include <vector>
 #include <stack>
@@ -269,12 +270,14 @@ auto make_dfs_result(const G& g) {
 
 namespace detail {
 
-template<typename G>
-void dfs_visit(
+/// DFS visit with callbacks
+template<typename G, typename Callbacks>
+void dfs_visit_with_callbacks(
     const G& g,
     vertex_descriptor_t<G> u,
     dfs_result<G>& result,
-    std::size_t& time
+    std::size_t& time,
+    Callbacks&& callbacks
 ) {
     using vertex_descriptor = vertex_descriptor_t<G>;
     
@@ -285,61 +288,148 @@ void dfs_visit(
     color(u) = vertex_color::gray;
     result.discover_vertex(u, time++);
     
+    // Discover vertex callback
+    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_discover_vertex)>, null_callback>) {
+        callbacks.on_discover_vertex(u, g);
+    }
+    
     // Explore edges
     for (auto e : out_edges(u, g)) {
         vertex_descriptor v = target(e, g);
         
+        // Examine edge callback
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_examine_edge)>, null_callback>) {
+            callbacks.on_examine_edge(e, g);
+        }
+        
         if (color(v) == vertex_color::white) {
-            // Tree edge
+            // Tree edge callback
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_tree_edge)>, null_callback>) {
+                callbacks.on_tree_edge(e, g);
+            }
+            
             pred(v) = u;
-            dfs_visit(g, v, result, time);
+            dfs_visit_with_callbacks(g, v, result, time, callbacks);
         } else if (color(v) == vertex_color::gray) {
             // Back edge (cycle detected)
             result.record_back_edge();
+            
+            // Back edge callback
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_back_edge)>, null_callback>) {
+                callbacks.on_back_edge(e, g);
+            }
+        } else {
+            // Forward or cross edge (black vertex)
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_forward_or_cross_edge)>, null_callback>) {
+                callbacks.on_forward_or_cross_edge(e, g);
+            }
         }
-        // gray->black would be forward/cross edge (we don't track these currently)
+        
+        // Finish edge callback
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_finish_edge)>, null_callback>) {
+            callbacks.on_finish_edge(e, g);
+        }
     }
     
     // Finish u
     color(u) = vertex_color::black;
     result.finish_vertex(u, time++);
+    
+    // Finish vertex callback
+    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_finish_vertex)>, null_callback>) {
+        callbacks.on_finish_vertex(u, g);
+    }
 }
 
+/// DFS implementation with callbacks (single source)
+template<typename G, typename Callbacks>
+void dfs_impl(
+    const G& g,
+    vertex_descriptor_t<G> start,
+    dfs_result<G>& result,
+    Callbacks&& callbacks
+) {
+    auto color = result.color_map();
+    auto pred = result.predecessor_map();
+    std::size_t time = 0;
+    
+    // Initialize all vertices
+    for (auto v : vertices(g)) {
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_initialize_vertex)>, null_callback>) {
+            callbacks.on_initialize_vertex(v, g);
+        }
+    }
+    
+    // Start vertex callback
+    if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_start_vertex)>, null_callback>) {
+        callbacks.on_start_vertex(start, g);
+    }
+    
+    // Start from the specified vertex
+    pred(start) = start;  // Root of tree
+    dfs_visit_with_callbacks(g, start, result, time, callbacks);
+}
+
+/// DFS implementation without callbacks
 template<typename G>
 void dfs_impl(
     const G& g,
     vertex_descriptor_t<G> start,
     dfs_result<G>& result
 ) {
-    using vertex_descriptor = vertex_descriptor_t<G>;
-    
+    dfs_impl(g, start, result, dfs_callbacks{});
+}
+
+/// Original dfs_visit without callbacks (for backward compatibility)
+template<typename G>
+void dfs_visit(
+    const G& g,
+    vertex_descriptor_t<G> u,
+    dfs_result<G>& result,
+    std::size_t& time
+) {
+    dfs_visit_with_callbacks(g, u, result, time, dfs_callbacks{});
+}
+
+/// DFS implementation with callbacks (all vertices)
+template<typename G, typename Callbacks>
+void dfs_impl_all(
+    const G& g,
+    dfs_result<G>& result,
+    Callbacks&& callbacks
+) {
     auto color = result.color_map();
     auto pred = result.predecessor_map();
     std::size_t time = 0;
     
-    // Start from the specified vertex
-    pred(start) = start;  // Root of tree
-    dfs_visit(g, start, result, time);
+    // Initialize all vertices
+    for (auto v : vertices(g)) {
+        if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_initialize_vertex)>, null_callback>) {
+            callbacks.on_initialize_vertex(v, g);
+        }
+    }
+    
+    // Visit all vertices (creates DFS forest for disconnected graphs)
+    for (auto v : vertices(g)) {
+        if (color(v) == vertex_color::white) {
+            // Start vertex callback
+            if constexpr (!std::is_same_v<std::remove_cvref_t<decltype(callbacks.on_start_vertex)>, null_callback>) {
+                callbacks.on_start_vertex(v, g);
+            }
+            
+            pred(v) = v;  // Root of this tree
+            dfs_visit_with_callbacks(g, v, result, time, callbacks);
+        }
+    }
 }
 
+/// DFS implementation without callbacks (all vertices)
 template<typename G>
 void dfs_impl_all(
     const G& g,
     dfs_result<G>& result
 ) {
-    using vertex_descriptor = vertex_descriptor_t<G>;
-    
-    auto color = result.color_map();
-    auto pred = result.predecessor_map();
-    std::size_t time = 0;
-    
-    // Visit all vertices (creates DFS forest for disconnected graphs)
-    for (auto v : vertices(g)) {
-        if (color(v) == vertex_color::white) {
-            pred(v) = v;  // Root of this tree
-            dfs_visit(g, v, result, time);
-        }
-    }
+    dfs_impl_all(g, result, dfs_callbacks{});
 }
 
 } // namespace detail
@@ -470,6 +560,83 @@ auto depth_first_search(
 ) {
     auto result = make_dfs_result(g);
     detail::dfs_impl_all(g, result);
+    return result;
+}
+
+// =============================================================================
+// depth_first_search - Callbacks Overload
+// =============================================================================
+
+/// Perform depth-first search from a source vertex with visitor callbacks.
+///
+/// This overload accepts a dfs_callbacks struct for event-driven processing
+/// during the DFS traversal.
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param source The source vertex
+/// @param callbacks Visitor callbacks for DFS events
+/// @return dfs_result containing DFS tree information
+///
+/// Example:
+/// @code
+///     bool has_cycle = false;
+///     auto result = depth_first_search(g, source, dfs_callbacks{
+///         .on_back_edge = [&](auto e, const auto& g) {
+///             has_cycle = true;
+///             std::cout << "Cycle detected: " << source(e, g) 
+///                       << " -> " << target(e, g) << "\n";
+///         },
+///         .on_finish_vertex = [](auto v, const auto&) {
+///             std::cout << "Finished: " << v << "\n";
+///         }
+///     });
+/// @endcode
+///
+template<typename G, typename... CallbackTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G>
+auto depth_first_search(
+    const G& g,
+    vertex_descriptor_t<G> source,
+    const dfs_callbacks<CallbackTypes...>& callbacks
+) {
+    auto result = make_dfs_result(g);
+    detail::dfs_impl(g, source, result, callbacks);
+    return result;
+}
+
+/// Perform depth-first search on entire graph with visitor callbacks.
+///
+/// This creates a DFS forest, visiting all vertices even in disconnected
+/// graphs.
+///
+/// @param g The graph
+/// @param callbacks Visitor callbacks for DFS events
+/// @return dfs_result containing DFS forest information
+///
+/// Example:
+/// @code
+///     std::vector<std::size_t> finish_order;
+///     auto result = depth_first_search(g, dfs_callbacks{
+///         .on_finish_vertex = [&](auto v, const auto&) {
+///             finish_order.push_back(v);
+///         }
+///     });
+///     // finish_order is reverse topological order
+/// @endcode
+///
+template<typename G, typename... CallbackTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G>
+auto depth_first_search(
+    const G& g,
+    const dfs_callbacks<CallbackTypes...>& callbacks
+) {
+    auto result = make_dfs_result(g);
+    detail::dfs_impl_all(g, result, callbacks);
     return result;
 }
 

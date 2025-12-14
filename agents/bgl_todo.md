@@ -44,7 +44,7 @@ This document outlines the phased implementation plan for modernizing the Boost 
 - [x] Document descriptor types (integral index vs iterator) and container choices
 - [x] Remove Boost.PropertyMap dependency from core headers
 
----
+libs/headers---
 
 ## Phase 2: Algorithm Modernization
 
@@ -55,20 +55,20 @@ This document outlines the phased implementation plan for modernizing the Boost 
 - [x] Implement `dijkstra_shortest_paths(g, start)` returning `dijkstra_result`
 - [x] Implement `dijkstra_shortest_paths(g, start, get_weight)` with custom property accessor
 - [x] Apply same pattern to `bellman_ford_shortest_paths`
-- [ ] Apply same pattern to `bfs` / `dfs` (return visited order or tree)
+- [x] Apply same pattern to `bfs` / `dfs` (return visited order or tree)
 
 ### 2.2 Named Parameters via Designated Initializers
-- [ ] Define `dijkstra_params` struct with defaulted template members
-- [ ] Implement `dijkstra_shortest_paths(g, start, dijkstra_params{...})`
-- [ ] Apply pattern to other multi-parameter algorithms (A*, Prim, Kruskal)
-- [ ] Remove Boost.Parameter dependency
+- [x] Define `dijkstra_params` struct with defaulted template members
+- [x] Implement `dijkstra_shortest_paths(g, start, dijkstra_params{...})`
+- [x] Apply pattern to other multi-parameter algorithms (A*, Prim, Kruskal)
+- [x] Remove Boost.Parameter dependency
 
 ### 2.3 Lambda-Friendly Visitors
-- [ ] Define `bfs_callbacks` struct with `std::function` members
-- [ ] Implement `breadth_first_search(g, start, bfs_callbacks{...})`
-- [ ] Define `dfs_callbacks` struct
-- [ ] Implement `depth_first_search(g, start, dfs_callbacks{...})`
-- [ ] Support direct lambda/invocable for single-event use case
+- [x] Define `bfs_callbacks` struct with `std::function` members
+- [x] Implement `breadth_first_search(g, start, bfs_callbacks{...})`
+- [x] Define `dfs_callbacks` struct
+- [x] Implement `depth_first_search(g, start, dfs_callbacks{...})`
+- [x] Support direct lambda/invocable for single-event use case
 
 ### 2.4 Range-Based Algorithm Variants
 - [ ] `breadth_first_search(g, initial_vertices_range, visitor)`
