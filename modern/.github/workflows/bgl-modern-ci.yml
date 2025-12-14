@@ -1,0 +1,224 @@
+name: BGL Modern CI
+
+on:
+  push:
+    branches: [main, develop, bgl2]
+    paths:
+      - 'libs/graph/modern/**'
+      - '.github/workflows/bgl-modern-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'libs/graph/modern/**'
+      - '.github/workflows/bgl-modern-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  # ===========================================================================
+  # GCC Tests (Linux)
+  # ===========================================================================
+  gcc:
+    name: GCC ${{ matrix.gcc }} - ${{ matrix.build_type }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        gcc: ['10', '11', '12', '13', '14']
+        build_type: [Release, Debug]
+        include:
+          - gcc: '10'
+            install: g++-10
+          - gcc: '11'
+            install: g++-11
+          - gcc: '12'
+            install: g++-12
+          - gcc: '13'
+            install: g++-13
+          - gcc: '14'
+            install: g++-14
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GCC ${{ matrix.gcc }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.install }}
+
+      - name: Configure
+        run: |
+          cmake -S libs/graph/modern -B build \
+            -DCMAKE_CXX_COMPILER=g++-${{ matrix.gcc }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBGL_MODERN_BUILD_TESTS=ON \
+            -DBGL_MODERN_BUILD_EXAMPLES=ON
+
+      - name: Build
+        run: cmake --build build --parallel $(nproc)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  # ===========================================================================
+  # Clang Tests (Linux)
+  # ===========================================================================
+  clang:
+    name: Clang ${{ matrix.clang }} - ${{ matrix.build_type }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        clang: ['13', '14', '15', '16', '17', '18']
+        build_type: [Release, Debug]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Clang ${{ matrix.clang }}
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh ${{ matrix.clang }}
+          sudo apt-get install -y libc++-${{ matrix.clang }}-dev libc++abi-${{ matrix.clang }}-dev
+
+      - name: Configure (libstdc++)
+        run: |
+          cmake -S libs/graph/modern -B build \
+            -DCMAKE_CXX_COMPILER=clang++-${{ matrix.clang }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBGL_MODERN_BUILD_TESTS=ON \
+            -DBGL_MODERN_BUILD_EXAMPLES=ON
+
+      - name: Build
+        run: cmake --build build --parallel $(nproc)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  # ===========================================================================
+  # MSVC Tests (Windows)
+  # ===========================================================================
+  msvc:
+    name: MSVC ${{ matrix.vs }} - ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            vs: '2022'
+            generator: 'Visual Studio 17 2022'
+            build_type: Release
+          - os: windows-2022
+            vs: '2022'
+            generator: 'Visual Studio 17 2022'
+            build_type: Debug
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          cmake -S libs/graph/modern -B build `
+            -G "${{ matrix.generator }}" `
+            -DBGL_MODERN_BUILD_TESTS=ON `
+            -DBGL_MODERN_BUILD_EXAMPLES=ON
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.build_type }} --parallel
+
+      - name: Test
+        run: ctest --test-dir build --config ${{ matrix.build_type }} --output-on-failure
+
+  # ===========================================================================
+  # macOS Tests (AppleClang)
+  # ===========================================================================
+  macos:
+    name: macOS ${{ matrix.os }} - ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-15]
+        build_type: [Release, Debug]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          cmake -S libs/graph/modern -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBGL_MODERN_BUILD_TESTS=ON \
+            -DBGL_MODERN_BUILD_EXAMPLES=ON
+
+      - name: Build
+        run: cmake --build build --parallel $(sysctl -n hw.ncpu)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  # ===========================================================================
+  # Sanitizers (Linux)
+  # ===========================================================================
+  sanitizers:
+    name: ${{ matrix.sanitizer }} Sanitizer
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [address, undefined, thread]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: |
+          cmake -S libs/graph/modern -B build \
+            -DCMAKE_CXX_COMPILER=clang++-18 \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=${{ matrix.sanitizer }} -fno-omit-frame-pointer" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=${{ matrix.sanitizer }}" \
+            -DBGL_MODERN_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel $(nproc)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+        env:
+          ASAN_OPTIONS: detect_leaks=1
+          UBSAN_OPTIONS: print_stacktrace=1
+
+  # ===========================================================================
+  # Code Coverage
+  # ===========================================================================
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+
+      - name: Configure
+        run: |
+          cmake -S libs/graph/modern -B build \
+            -DCMAKE_CXX_COMPILER=g++-14 \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="--coverage" \
+            -DCMAKE_EXE_LINKER_FLAGS="--coverage" \
+            -DBGL_MODERN_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel $(nproc)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Generate Coverage Report
+        run: |
+          lcov --capture --directory build --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --list coverage.info
