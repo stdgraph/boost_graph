@@ -108,4 +108,9 @@ add_executable(test_parallel_algorithms test_parallel_algorithms.cpp)
 target_link_libraries(test_parallel_algorithms PRIVATE bgl::modern)
 add_test(NAME parallel_algorithms COMMAND test_parallel_algorithms)
 
+# Composable algorithms test
+add_executable(test_composable_algorithms test_composable_algorithms.cpp)
+target_link_libraries(test_composable_algorithms PRIVATE bgl::modern)
+add_test(NAME composable_algorithms COMMAND test_composable_algorithms)
+
 message(STATUS "BGL Modern tests configured")
