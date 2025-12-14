@@ -113,4 +113,9 @@ add_executable(test_composable_algorithms test_composable_algorithms.cpp)
 target_link_libraries(test_composable_algorithms PRIVATE bgl::modern)
 add_test(NAME composable_algorithms COMMAND test_composable_algorithms)
 
+# Validation framework test
+add_executable(test_validation test_validation.cpp)
+target_link_libraries(test_validation PRIVATE bgl::modern)
+add_test(NAME validation COMMAND test_validation)
+
 message(STATUS "BGL Modern tests configured")
