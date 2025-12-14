@@ -224,18 +224,92 @@ concept MutableVertexListGraph = MutableGraph<G> && VertexListGraph<G>;
 // PropertyMap Concepts
 // =============================================================================
 
-/// Concept for a readable property map (callable that maps Key -> Value)
+/// Base concept for a property map: a callable that maps Key -> Value.
+///
+/// This is the foundational property map concept. A property map is simply
+/// any callable (function, lambda, function object) that takes a key and
+/// returns a value. This replaces the heavyweight Boost.PropertyMap mechanism
+/// with a simple, lightweight concept.
+///
+/// The key insight is that C++ lambdas with captures provide a natural way
+/// to create property maps that can access external storage or graph properties:
+///
+/// Example:
+/// @code
+///     // Lambda capturing external storage
+///     std::vector<double> weights(num_vertices(g));
+///     auto weight_map = [&weights](vertex_descriptor v) { return weights[v]; };
+///
+///     // Lambda capturing graph (bundled properties)
+///     auto weight_map = [&g](edge_descriptor e) { return g[e].weight; };
+///
+///     // Both satisfy PropertyMap<vertex_descriptor, double>
+/// @endcode
+///
+/// Requirements:
+/// - std::invocable<F, Key>: Can call F with Key argument
+/// - std::convertible_to<result, Value>: Result is convertible to Value
+///
+template<typename F, typename Key, typename Value>
+concept PropertyMap = std::invocable<F, Key> &&
+    std::convertible_to<std::invoke_result_t<F, Key>, Value>;
+
+/// Concept for a readable property map.
+///
+/// Identical to PropertyMap - separated for semantic clarity and to match
+/// the traditional BGL property map category hierarchy.
+///
+/// A ReadablePropertyMap can be used with get(pmap, key) to retrieve values.
+///
+/// Example:
+/// @code
+///     auto get_color = [&colors](vertex_descriptor v) { return colors[v]; };
+///     static_assert(ReadablePropertyMap<decltype(get_color), vertex_descriptor, Color>);
+///     Color c = get(get_color, v);
+/// @endcode
+///
 template<typename F, typename Key, typename Value>
 concept ReadablePropertyMap = std::invocable<F, Key> &&
     std::convertible_to<std::invoke_result_t<F, Key>, Value>;
 
-/// Concept for a writable property map
+/// Concept for a writable property map.
+///
+/// A WritablePropertyMap supports assignment to the result of the call.
+/// This requires that the property map returns an lvalue reference.
+///
+/// Example:
+/// @code
+///     auto color_map = [&colors](vertex_descriptor v) -> Color& { 
+///         return colors[v]; 
+///     };
+///     static_assert(WritablePropertyMap<decltype(color_map), vertex_descriptor, Color>);
+///     put(color_map, v, Color::black);  // or: color_map(v) = Color::black;
+/// @endcode
+///
 template<typename PM, typename Key, typename Value>
 concept WritablePropertyMap = requires(PM& pm, Key k, Value v) {
     { pm(k) = v };
 };
 
-/// Concept for a read-write property map
+/// Concept for a read-write property map.
+///
+/// A ReadWritePropertyMap supports both reading and writing. This is the
+/// most common property map type used in graph algorithms that need to
+/// maintain state (like distance maps, predecessor maps, color maps).
+///
+/// Example:
+/// @code
+///     std::vector<double> distances(num_vertices(g), infinity);
+///     auto dist_map = [&distances](vertex_descriptor v) -> double& { 
+///         return distances[v]; 
+///     };
+///     static_assert(ReadWritePropertyMap<decltype(dist_map), vertex_descriptor, double>);
+///     
+///     // Read and write
+///     double d = get(dist_map, v);
+///     put(dist_map, v, d + 1.0);
+/// @endcode
+///
 template<typename PM, typename Key, typename Value>
 concept ReadWritePropertyMap = 
     ReadablePropertyMap<PM, Key, Value> &&

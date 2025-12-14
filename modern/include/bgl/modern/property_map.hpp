@@ -4,6 +4,99 @@
 // Copyright 2024 Boost Authors
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
+//
+// =============================================================================
+// PROPERTY MAP OVERVIEW
+// =============================================================================
+//
+// Property maps provide a uniform abstraction for accessing properties
+// associated with graph vertices and edges. This header provides:
+//
+// 1. CONCEPTS (defined in concepts.hpp):
+//    - PropertyMap<F, Key, Value>: Base concept (invocable Key -> Value)
+//    - ReadablePropertyMap<F, Key, Value>: Readable property access
+//    - WritablePropertyMap<PM, Key, Value>: Writable property access
+//    - ReadWritePropertyMap<PM, Key, Value>: Both read and write
+//    - LvaluePropertyMap<PMap, Key>: Returns lvalue reference
+//
+// 2. FREE FUNCTIONS:
+//    - get(pmap, key) -> value: Read from property map
+//    - put(pmap, key, value): Write to property map
+//
+// 3. PROPERTY MAP ADAPTERS:
+//    - vector_property_map<T>: Vector-backed for integral keys
+//    - iterator_property_map<Iter, IndexMap>: Iterator + index map
+//    - identity_property_map: Returns key as value
+//
+// 4. DEFAULT ACCESSORS:
+//    - default_weight_accessor(g): Access g[e].weight
+//    - default_distance_accessor(g): Access g[v].distance
+//    - vertex_property_accessor(g, &T::member): Access member pointer
+//    - edge_property_accessor(g, &T::member): Access member pointer
+//
+// =============================================================================
+// DESCRIPTOR TYPES AND CONTAINER CHOICES
+// =============================================================================
+//
+// Graph descriptors can be implemented in several ways, each with different
+// implications for property map design:
+//
+// 1. INTEGRAL INDICES (e.g., size_t):
+//    - vertex_descriptor = std::size_t
+//    - Direct array indexing: container[descriptor]
+//    - Best container: std::vector (O(1) access)
+//    - Example:
+//        std::vector<Color> colors(num_vertices(g));
+//        auto color_map = [&colors](size_t v) -> Color& { return colors[v]; };
+//
+// 2. ITERATOR-BASED DESCRIPTORS:
+//    - vertex_descriptor = some_iterator_type
+//    - May need conversion to index via vertex_index map
+//    - Use iterator_property_map adapter
+//    - Example:
+//        auto pmap = make_iterator_property_map(colors.begin(), vertex_index_map);
+//
+// 3. OPAQUE HANDLES (pointers, smart handles):
+//    - vertex_descriptor = void*, node*, handle<T>
+//    - Cannot use direct array indexing
+//    - Best container: std::unordered_map (O(1) average)
+//    - Example:
+//        std::unordered_map<vertex_descriptor, Color> colors;
+//        auto color_map = [&colors](vertex_descriptor v) -> Color& { 
+//            return colors[v]; 
+//        };
+//
+// CONTAINER CHOICE SUMMARY:
+// +-----------------------+---------------------------+------------------------+
+// | Descriptor Type       | Recommended Container     | Property Map Pattern   |
+// +-----------------------+---------------------------+------------------------+
+// | size_t (integral)     | std::vector               | vector_property_map    |
+// | iterator              | std::vector + index_map   | iterator_property_map  |
+// | pointer/handle        | std::unordered_map        | Lambda with map        |
+// | sparse (few have it)  | std::unordered_map        | Lambda with map        |
+// +-----------------------+---------------------------+------------------------+
+//
+// =============================================================================
+// THE GRAPH-CAPTURING LAMBDA PATTERN
+// =============================================================================
+//
+// The recommended pattern for creating property maps that access bundled
+// properties is to use a graph-capturing lambda:
+//
+//     auto weight = [&g](edge_descriptor e) { return g[e].weight; };
+//
+// This pattern:
+// - Captures the graph by reference
+// - Returns the property value (or reference for mutable access)
+// - Works uniformly whether properties are bundled or external
+// - Requires no separate property map library
+//
+// For mutable access, return a reference:
+//
+//     auto color = [&g](vertex_descriptor v) -> Color& { return g[v].color; };
+//     color(v) = Color::black;  // Direct assignment
+//
+// =============================================================================
 
 #ifndef BGL_MODERN_PROPERTY_MAP_HPP
 #define BGL_MODERN_PROPERTY_MAP_HPP

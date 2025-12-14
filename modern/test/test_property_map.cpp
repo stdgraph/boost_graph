@@ -84,14 +84,36 @@ inline std::size_t num_vertices(const simple_graph& g) {
 
 namespace {
 
+// Test base PropertyMap concept
+void test_base_property_map_concept() {
+    // Lambda satisfies PropertyMap
+    auto lambda = [](std::size_t key) { return key * 2; };
+    static_assert(bgl::PropertyMap<decltype(lambda), std::size_t, int>);
+    static_assert(bgl::PropertyMap<decltype(lambda), std::size_t, std::size_t>);
+    static_assert(bgl::PropertyMap<decltype(lambda), std::size_t, double>);
+    
+    // Function pointer satisfies PropertyMap
+    static_assert(bgl::PropertyMap<double(*)(int), int, double>);
+    
+    // std::function satisfies PropertyMap
+    std::function<int(std::size_t)> fn = [](std::size_t x) { return static_cast<int>(x); };
+    static_assert(bgl::PropertyMap<decltype(fn), std::size_t, int>);
+    
+    // Negative test: non-callable does not satisfy PropertyMap
+    static_assert(!bgl::PropertyMap<int, std::size_t, int>);
+    
+    std::cout << "  Base PropertyMap concept: PASSED\n";
+}
+
 // Test lambda-based property map
 void test_lambda_property_map_concepts() {
     test::simple_graph g(5);
     
-    // Lambda returning value (ReadablePropertyMap)
+    // Lambda returning value (ReadablePropertyMap and PropertyMap)
     auto get_weight = [&g](test::simple_graph::edge_descriptor e) {
         return g[e].weight;
     };
+    static_assert(bgl::PropertyMap<decltype(get_weight), test::simple_graph::edge_descriptor, double>);
     static_assert(bgl::ReadablePropertyMap<decltype(get_weight), test::simple_graph::edge_descriptor, double>);
     
     // Lambda returning lvalue reference (LvaluePropertyMap)
@@ -312,6 +334,7 @@ int main() {
     std::cout << "==============================\n\n";
     
     std::cout << "Concept Tests:\n";
+    test_base_property_map_concept();
     test_lambda_property_map_concepts();
     test_vector_property_map_concepts();
     test_identity_property_map();
