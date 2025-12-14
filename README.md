@@ -55,3 +55,32 @@ You can either run all the 300+ tests listed in `Jamfile.v2` or run a single tes
     ../../../b2 cycle_canceling_test   <- single test
 
 You can also check the [regression tests reports](http://beta.boost.org/development/tests/develop/developer/graph.html).
+
+## C++20 Modernization (bgl2)
+
+A modernized C++20 version of the Boost Graph Library is being developed in the [stdgraph/boost_graph](https://github.com/stdgraph/boost_graph) fork. This refactoring effort aims to bring the library up to modern C++ standards.
+
+### Using the bgl2 Branch
+
+To work with the modernized version, add the fork as a remote and switch to the `bgl2` branch:
+
+    cd libs/graph
+    git remote add stdfork https://github.com/stdgraph/boost_graph.git
+    git fetch stdfork
+    git checkout bgl2
+    git branch --set-upstream-to=stdfork/bgl2 bgl2
+
+This associates your local `bgl2` branch with the fork's `bgl2` branch, so `git pull` and `git push` will use the fork by default.
+
+The agents directory is located at `libs/graph/agents/` (relative to the boost root) so everything is contained in a single repository.
+
+### Using an AI Agent
+After the repos have been set up you'll need to prime the agent with the context your working with.
+Enter the following in your agent's chat command line to prime the agent with the context it needs to continue the refactoring.
+```
+This project is focused on refactoring the graph library in libs/graph
+All agent files are in libs/graph/agents/
+Review libs/graph/agents/bgl_todo.md instructions to prepare for future work
+All refactoring output must be written under the libs/graph/modern/ directory
+```
+
