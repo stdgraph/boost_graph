@@ -98,4 +98,9 @@ add_executable(test_grid_graph test_grid_graph.cpp)
 target_link_libraries(test_grid_graph PRIVATE bgl::modern)
 add_test(NAME grid_graph COMMAND test_grid_graph)
 
+# Coroutine traversal test
+add_executable(test_coroutine_traverse test_coroutine_traverse.cpp)
+target_link_libraries(test_coroutine_traverse PRIVATE bgl::modern)
+add_test(NAME coroutine_traverse COMMAND test_coroutine_traverse)
+
 message(STATUS "BGL Modern tests configured")
