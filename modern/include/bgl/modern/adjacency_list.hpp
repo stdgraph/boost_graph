@@ -30,14 +30,12 @@ namespace bgl {
 // - directed_tag
 // - undirected_tag
 // - bidirectional_tag
+// - no_property
 
 /// Selector for vertex container type
 struct vecS {};  // std::vector
 struct listS {}; // std::list (TODO)
 struct setS {};  // std::set (TODO)
-
-/// Empty property placeholder
-struct no_property {};
 
 // =============================================================================
 // Edge Descriptor

@@ -83,4 +83,19 @@ add_executable(test_strong_descriptor test_strong_descriptor.cpp)
 target_link_libraries(test_strong_descriptor PRIVATE bgl::modern)
 add_test(NAME strong_descriptor COMMAND test_strong_descriptor)
 
+# Adjacency matrix container test
+add_executable(test_adjacency_matrix_container test_adjacency_matrix_container.cpp)
+target_link_libraries(test_adjacency_matrix_container PRIVATE bgl::modern)
+add_test(NAME adjacency_matrix_container COMMAND test_adjacency_matrix_container)
+
+# CSR graph container test
+add_executable(test_csr_graph test_csr_graph.cpp)
+target_link_libraries(test_csr_graph PRIVATE bgl::modern)
+add_test(NAME csr_graph COMMAND test_csr_graph)
+
+# Grid graph container test
+add_executable(test_grid_graph test_grid_graph.cpp)
+target_link_libraries(test_grid_graph PRIVATE bgl::modern)
+add_test(NAME grid_graph COMMAND test_grid_graph)
+
 message(STATUS "BGL Modern tests configured")

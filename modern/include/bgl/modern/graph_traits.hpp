@@ -41,6 +41,13 @@ struct allow_parallel_edge_tag {};
 struct disallow_parallel_edge_tag {};
 
 // =============================================================================
+// Property Tag
+// =============================================================================
+
+/// Empty property type for graphs without vertex/edge/graph properties
+struct no_property {};
+
+// =============================================================================
 // Graph Traits Primary Template
 // =============================================================================
 
