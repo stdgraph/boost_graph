@@ -53,4 +53,9 @@ add_executable(test_dfs test_dfs.cpp)
 target_link_libraries(test_dfs PRIVATE bgl::modern)
 add_test(NAME dfs COMMAND test_dfs)
 
+# Algorithm parameters (named parameters) test
+add_executable(test_algorithm_params test_algorithm_params.cpp)
+target_link_libraries(test_algorithm_params PRIVATE bgl::modern)
+add_test(NAME algorithm_params COMMAND test_algorithm_params)
+
 message(STATUS "BGL Modern tests configured")

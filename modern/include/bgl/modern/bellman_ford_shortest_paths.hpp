@@ -13,6 +13,7 @@
 #include <bgl/modern/graph_traits.hpp>
 #include <bgl/modern/property_map.hpp>
 #include <bgl/modern/algorithm_result.hpp>
+#include <bgl/modern/algorithm_params.hpp>
 #include <bgl/modern/dijkstra_shortest_paths.hpp>  // For WeightAccessor, make_edge_weight_accessor
 
 #include <vector>
@@ -294,6 +295,61 @@ auto bellman_ford_shortest_paths_as(
 ) {
     auto result = make_bellman_ford_result<DistanceType>(g, source);
     detail::bellman_ford_impl(g, source, result, std::forward<WeightFunc>(get_weight));
+    return result;
+}
+
+// =============================================================================
+// bellman_ford_shortest_paths - Named Parameters Overload
+// =============================================================================
+
+/// Compute shortest paths from a source vertex using named parameters.
+///
+/// This overload uses C++20 designated initializers for flexible parameter
+/// specification. All parameters have sensible defaults.
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph, EdgeListGraph, and IncidenceGraph concepts
+///
+/// Complexity: O(V * E)
+///
+/// @param g The graph
+/// @param source The source vertex
+/// @param params Named parameters (see bellman_ford_params)
+/// @return bellman_ford_result containing distances, predecessors, and negative cycle info
+///
+/// Example:
+/// @code
+///     // Use all defaults (unit weights)
+///     auto r1 = bellman_ford_shortest_paths(g, source, bellman_ford_params{});
+///
+///     // Custom weight map only
+///     auto r2 = bellman_ford_shortest_paths(g, source, bellman_ford_params{
+///         .weight_map = [&g](auto e) { return g[e].cost; }
+///     });
+/// @endcode
+///
+template<typename G, typename... ParamTypes>
+    requires VertexListGraph<G> && EdgeListGraph<G> && IncidenceGraph<G>
+auto bellman_ford_shortest_paths(
+    const G& g,
+    vertex_descriptor_t<G> source,
+    const bellman_ford_params<ParamTypes...>& params
+) {
+    using edge_descriptor = edge_descriptor_t<G>;
+    
+    // Get the weight map
+    auto weight_map = params.weight_map;
+    
+    // Determine weight/distance type from weight map
+    using weight_type = detail::weight_type_t<decltype(weight_map), edge_descriptor>;
+    using distance_type = std::conditional_t<
+        std::is_floating_point_v<weight_type>,
+        weight_type,
+        double
+    >;
+    
+    auto result = make_bellman_ford_result<distance_type>(g, source);
+    detail::bellman_ford_impl(g, source, result, weight_map);
     return result;
 }
 

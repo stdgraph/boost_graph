@@ -11,6 +11,7 @@
 #include <bgl/modern/version.hpp>
 #include <bgl/modern/concepts.hpp>
 #include <bgl/modern/graph_traits.hpp>
+#include <bgl/modern/algorithm_params.hpp>
 
 #include <vector>
 #include <queue>
@@ -332,6 +333,50 @@ void bfs_impl(
 template<typename G>
     requires VertexListGraph<G> && IncidenceGraph<G>
 auto breadth_first_search(const G& g, vertex_descriptor_t<G> source) {
+    auto result = make_bfs_result(g, source);
+    detail::bfs_impl(g, source, result);
+    return result;
+}
+
+// =============================================================================
+// breadth_first_search - Named Parameters Overload
+// =============================================================================
+
+/// Perform breadth-first search from a source vertex using named parameters.
+///
+/// This overload uses C++20 designated initializers for flexible parameter
+/// specification.
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param source The source vertex
+/// @param params Named parameters (see bfs_params)
+/// @return bfs_result containing BFS tree information
+///
+/// Example:
+/// @code
+///     // With default parameters
+///     auto r1 = breadth_first_search(g, source, bfs_params{});
+///
+///     // With custom visitor
+///     auto r2 = breadth_first_search(g, source, bfs_params{
+///         .visitor = my_bfs_visitor{}
+///     });
+/// @endcode
+///
+template<typename G, typename... ParamTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G>
+auto breadth_first_search(
+    const G& g,
+    vertex_descriptor_t<G> source,
+    const bfs_params<ParamTypes...>& params
+) {
+    // For now, params.visitor is not used in the basic implementation
+    // but the interface is ready for visitor support (Phase 2.3)
     auto result = make_bfs_result(g, source);
     detail::bfs_impl(g, source, result);
     return result;

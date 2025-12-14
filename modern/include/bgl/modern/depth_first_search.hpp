@@ -12,6 +12,7 @@
 #include <bgl/modern/concepts.hpp>
 #include <bgl/modern/graph_traits.hpp>
 #include <bgl/modern/breadth_first_search.hpp>  // For vertex_color
+#include <bgl/modern/algorithm_params.hpp>
 
 #include <vector>
 #include <stack>
@@ -406,6 +407,67 @@ auto depth_first_search(const G& g, vertex_descriptor_t<G> source) {
 template<typename G>
     requires VertexListGraph<G> && IncidenceGraph<G>
 auto depth_first_search(const G& g) {
+    auto result = make_dfs_result(g);
+    detail::dfs_impl_all(g, result);
+    return result;
+}
+
+// =============================================================================
+// depth_first_search - Named Parameters Overload
+// =============================================================================
+
+/// Perform depth-first search from a source vertex using named parameters.
+///
+/// This overload uses C++20 designated initializers for flexible parameter
+/// specification.
+///
+/// Requirements:
+/// - G must satisfy VertexListGraph and IncidenceGraph concepts
+///
+/// Complexity: O(V + E)
+///
+/// @param g The graph
+/// @param source The source vertex
+/// @param params Named parameters (see dfs_params)
+/// @return dfs_result containing DFS tree information
+///
+/// Example:
+/// @code
+///     // With default parameters
+///     auto r1 = depth_first_search(g, source, dfs_params{});
+///
+///     // With custom visitor
+///     auto r2 = depth_first_search(g, source, dfs_params{
+///         .visitor = my_dfs_visitor{}
+///     });
+/// @endcode
+///
+template<typename G, typename... ParamTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G>
+auto depth_first_search(
+    const G& g,
+    vertex_descriptor_t<G> source,
+    const dfs_params<ParamTypes...>& params
+) {
+    // For now, params.visitor is not used in the basic implementation
+    // but the interface is ready for visitor support (Phase 2.3)
+    auto result = make_dfs_result(g);
+    detail::dfs_impl(g, source, result);
+    return result;
+}
+
+/// Perform depth-first search on entire graph using named parameters.
+///
+/// @param g The graph
+/// @param params Named parameters (see dfs_params)
+/// @return dfs_result containing DFS forest information
+///
+template<typename G, typename... ParamTypes>
+    requires VertexListGraph<G> && IncidenceGraph<G>
+auto depth_first_search(
+    const G& g,
+    const dfs_params<ParamTypes...>& params
+) {
     auto result = make_dfs_result(g);
     detail::dfs_impl_all(g, result);
     return result;

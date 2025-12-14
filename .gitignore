@@ -9,4 +9,6 @@ triangular-kk.dot
 test/*.dot
 example/routing-table.dat
 example/figs/ospf-sptree.dot
+
 CMakeFiles/
+build/
