@@ -103,4 +103,9 @@ add_executable(test_coroutine_traverse test_coroutine_traverse.cpp)
 target_link_libraries(test_coroutine_traverse PRIVATE bgl::modern)
 add_test(NAME coroutine_traverse COMMAND test_coroutine_traverse)
 
+# Parallel algorithms test
+add_executable(test_parallel_algorithms test_parallel_algorithms.cpp)
+target_link_libraries(test_parallel_algorithms PRIVATE bgl::modern)
+add_test(NAME parallel_algorithms COMMAND test_parallel_algorithms)
+
 message(STATUS "BGL Modern tests configured")
