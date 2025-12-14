@@ -133,4 +133,8 @@ add_executable(test_algorithm_features test_algorithm_features.cpp)
 target_link_libraries(test_algorithm_features PRIVATE bgl::modern)
 add_test(NAME algorithm_features COMMAND test_algorithm_features)
 
+# Performance benchmarks (not a test, just an executable)
+add_executable(benchmark_performance benchmark_performance.cpp)
+target_link_libraries(benchmark_performance PRIVATE bgl::modern)
+
 message(STATUS "BGL Modern tests configured")
