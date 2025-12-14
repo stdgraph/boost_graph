@@ -128,4 +128,9 @@ add_executable(test_ranges_integration test_ranges_integration.cpp)
 target_link_libraries(test_ranges_integration PRIVATE bgl::modern)
 add_test(NAME ranges_integration COMMAND test_ranges_integration)
 
+# Algorithm features test (structured returns, lambda visitors, named params)
+add_executable(test_algorithm_features test_algorithm_features.cpp)
+target_link_libraries(test_algorithm_features PRIVATE bgl::modern)
+add_test(NAME algorithm_features COMMAND test_algorithm_features)
+
 message(STATUS "BGL Modern tests configured")
