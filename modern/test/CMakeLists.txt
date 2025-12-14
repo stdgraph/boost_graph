@@ -78,4 +78,9 @@ add_executable(test_adjacency_list test_adjacency_list.cpp)
 target_link_libraries(test_adjacency_list PRIVATE bgl::modern)
 add_test(NAME adjacency_list COMMAND test_adjacency_list)
 
+# Strong descriptor test
+add_executable(test_strong_descriptor test_strong_descriptor.cpp)
+target_link_libraries(test_strong_descriptor PRIVATE bgl::modern)
+add_test(NAME strong_descriptor COMMAND test_strong_descriptor)
+
 message(STATUS "BGL Modern tests configured")
