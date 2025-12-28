@@ -25,7 +25,7 @@ using namespace bgl;
 void test_vertices_with_for_each() {
     std::cout << "Testing vertices(g) with std::ranges::for_each...\n";
     
-    adjacency_list<directed_tag> g(6);
+    simple_adjacency_list<directed_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -48,7 +48,7 @@ void test_vertices_with_for_each() {
 void test_vertices_with_count_if() {
     std::cout << "Testing vertices(g) with std::ranges::count_if...\n";
     
-    adjacency_list<directed_tag> g(10);
+    simple_adjacency_list<directed_tag> g(10);
     for (std::size_t i = 0; i < 9; ++i) {
         g.add_edge(i, i + 1);
     }
@@ -66,7 +66,7 @@ void test_vertices_with_count_if() {
 void test_vertices_with_transform() {
     std::cout << "Testing vertices(g) with std::views::transform...\n";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     
     // Transform vertices to their out-degrees
     auto degrees = vertices(g) 
@@ -91,7 +91,7 @@ void test_out_edges_with_filter() {
     struct EdgeProps {
         double weight;
     };
-    adjacency_list<directed_tag, no_property, EdgeProps> g(5);
+    simple_adjacency_list<directed_tag, no_property, EdgeProps> g(5);
     
     g.add_edge(0, 1, {.weight = 1.0});
     g.add_edge(0, 2, {.weight = 5.0});
@@ -111,7 +111,7 @@ void test_out_edges_with_filter() {
 void test_out_edges_with_transform() {
     std::cout << "Testing out_edges(v, g) with std::views::transform...\n";
     
-    adjacency_list<directed_tag> g(4);
+    simple_adjacency_list<directed_tag> g(4);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(0, 3);
@@ -133,7 +133,7 @@ void test_out_edges_with_transform() {
 void test_out_edges_with_take() {
     std::cout << "Testing out_edges(v, g) with std::views::take...\n";
     
-    adjacency_list<directed_tag> g(6);
+    simple_adjacency_list<directed_tag> g(6);
     for (std::size_t i = 1; i < 6; ++i) {
         g.add_edge(0, i);
     }
@@ -154,7 +154,7 @@ void test_out_edges_with_take() {
 void test_bfs_result_with_ranges() {
     std::cout << "Testing BFS result with std::ranges...\n";
     
-    adjacency_list<directed_tag> g(6);
+    simple_adjacency_list<directed_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 3);
@@ -189,7 +189,7 @@ void test_dijkstra_result_with_ranges() {
     struct EdgeProps {
         double weight;
     };
-    adjacency_list<directed_tag, no_property, EdgeProps> g(5);
+    simple_adjacency_list<directed_tag, no_property, EdgeProps> g(5);
     
     g.add_edge(0, 1, {.weight = 1.0});
     g.add_edge(0, 2, {.weight = 4.0});
@@ -221,7 +221,7 @@ void test_dijkstra_result_with_ranges() {
 void test_dfs_result_with_ranges() {
     std::cout << "Testing DFS result with std::ranges...\n";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 3);
@@ -262,7 +262,7 @@ void test_complex_range_pipeline() {
     struct EdgeProps {
         double weight;
     };
-    adjacency_list<directed_tag, no_property, EdgeProps> g(10);
+    simple_adjacency_list<directed_tag, no_property, EdgeProps> g(10);
     
     // Create graph with various edge weights
     for (std::size_t i = 0; i < 9; ++i) {
@@ -293,7 +293,7 @@ void test_complex_range_pipeline() {
 void test_vertices_range_properties() {
     std::cout << "Testing vertices range properties...\n";
     
-    adjacency_list<directed_tag> g(100);
+    simple_adjacency_list<directed_tag> g(100);
     
     auto verts = vertices(g);
     
@@ -319,7 +319,7 @@ void test_vertices_range_properties() {
 void test_edges_range_properties() {
     std::cout << "Testing edges range properties...\n";
     
-    adjacency_list<directed_tag> g(10);
+    simple_adjacency_list<directed_tag> g(10);
     for (std::size_t i = 0; i < 5; ++i) {
         g.add_edge(0, i + 1);
     }
@@ -345,7 +345,7 @@ void test_edges_range_properties() {
 void test_views_drop_and_take() {
     std::cout << "Testing std::views::drop and take...\n";
     
-    adjacency_list<directed_tag> g(20);
+    simple_adjacency_list<directed_tag> g(20);
     
     // Take middle 10 vertices (drop 5, take 10)
     auto middle_vertices = vertices(g) 
@@ -365,7 +365,7 @@ void test_views_drop_and_take() {
 void test_views_reverse() {
     std::cout << "Testing std::views::reverse...\n";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     
     // Note: reverse requires bidirectional_range, which our vertices() may not support
     // This tests if we can collect and reverse
@@ -388,7 +388,7 @@ void test_ranges_find_if() {
     struct VertexProps {
         int value;
     };
-    adjacency_list<directed_tag, VertexProps> g(10);
+    simple_adjacency_list<directed_tag, VertexProps> g(10);
     
     // Set some vertex values
     g[5].value = 42;

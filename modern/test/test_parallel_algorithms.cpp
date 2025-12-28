@@ -55,7 +55,7 @@ void test_parallel_bfs_correctness() {
     //  / \   \
     // 3   4   5
     //
-    adjacency_list<undirected_tag> g(6);
+    simple_adjacency_list<undirected_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 3);
@@ -99,7 +99,7 @@ void test_parallel_bfs_disconnected() {
     std::cout << "Testing parallel BFS on disconnected graph...\n";
     
     // Create disconnected graph: 0-1-2  3-4
-    adjacency_list<undirected_tag> g(5);
+    simple_adjacency_list<undirected_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(3, 4);
@@ -112,9 +112,9 @@ void test_parallel_bfs_disconnected() {
     assert_eq(result.distance_to(2), std::size_t{2}, "Distance to v2");
     
     // Unreachable component
-    assert_eq(result.distance_to(3), bfs_result<adjacency_list<undirected_tag>>::infinity(),
+    assert_eq(result.distance_to(3), bfs_result<simple_adjacency_list<undirected_tag>>::infinity(),
               "v3 is unreachable");
-    assert_eq(result.distance_to(4), bfs_result<adjacency_list<undirected_tag>>::infinity(),
+    assert_eq(result.distance_to(4), bfs_result<simple_adjacency_list<undirected_tag>>::infinity(),
               "v4 is unreachable");
     
     std::cout << "  PASS: Disconnected graph handled correctly\n";
@@ -131,7 +131,7 @@ void test_parallel_components_correctness() {
     // Component 0: 0-1-2
     // Component 1: 3-4
     // Component 2: 5
-    adjacency_list<undirected_tag> g(6);
+    simple_adjacency_list<undirected_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(3, 4);
@@ -175,7 +175,7 @@ void test_parallel_components_fully_connected() {
     std::cout << "Testing parallel components on fully connected graph...\n";
     
     const std::size_t n = 10;
-    adjacency_list<undirected_tag> g(n);
+    simple_adjacency_list<undirected_tag> g(n);
     
     // Create complete graph
     for (std::size_t i = 0; i < n; ++i) {
@@ -204,7 +204,7 @@ void test_parallel_components_fully_connected() {
 void test_parallel_for_each_vertex() {
     std::cout << "Testing parallel_for_each_vertex...\n";
     
-    adjacency_list<undirected_tag> g(100);
+    simple_adjacency_list<undirected_tag> g(100);
     std::vector<std::atomic<int>> counts(100);
     
     // Initialize counts
@@ -234,7 +234,7 @@ void test_parallel_for_each_vertex() {
 void test_parallel_for_each_edge() {
     std::cout << "Testing edge iteration in parallel...\n";
     
-    adjacency_list<undirected_tag> g(10);
+    simple_adjacency_list<undirected_tag> g(10);
     
     // Add edges in a chain
     for (std::size_t i = 0; i < 9; ++i) {
@@ -265,7 +265,7 @@ void test_parallel_for_each_edge() {
 void test_sequential_fallback() {
     std::cout << "Testing sequential policy fallback...\n";
     
-    adjacency_list<undirected_tag> g(5);
+    simple_adjacency_list<undirected_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -294,7 +294,7 @@ void test_large_graph_performance() {
     const std::size_t n = 10000;
     const std::size_t degree = 10;
     
-    adjacency_list<undirected_tag> g(n);
+    simple_adjacency_list<undirected_tag> g(n);
     
     // Create random graph with ~degree edges per vertex
     std::cout << "  Building graph with " << n << " vertices...\n";
@@ -332,7 +332,7 @@ void test_large_graph_performance() {
     std::cout << "  PASS: Results match\n";
     
     // Benchmark sequential connected components
-    adjacency_list<undirected_tag> g2(n);
+    simple_adjacency_list<undirected_tag> g2(n);
     for (std::size_t i = 0; i < n - 1; i += 2) {
         g2.add_edge(i, i + 1);  // n/2 components
     }
@@ -367,14 +367,14 @@ void test_edge_cases() {
     std::cout << "Testing edge cases...\n";
     
     // Empty graph
-    adjacency_list<undirected_tag> empty(0);
+    simple_adjacency_list<undirected_tag> empty(0);
     auto empty_cc = parallel_connected_components(std::execution::par, empty);
     assert_eq(empty_cc.num_components(), std::size_t{0}, "Empty graph has 0 components");
     
     std::cout << "  PASS: Empty graph\n";
     
     // Single vertex
-    adjacency_list<undirected_tag> single(1);
+    simple_adjacency_list<undirected_tag> single(1);
     auto single_bfs = parallel_bfs(std::execution::par, single, std::size_t{0});
     assert_eq(single_bfs.distance_to(0), std::size_t{0}, "Single vertex distance");
     
@@ -384,7 +384,7 @@ void test_edge_cases() {
     std::cout << "  PASS: Single vertex\n";
     
     // Self-loop (if supported)
-    adjacency_list<undirected_tag> loop(1);
+    simple_adjacency_list<undirected_tag> loop(1);
     loop.add_edge(0, 0);
     auto loop_cc = parallel_connected_components(std::execution::par, loop);
     assert_eq(loop_cc.num_components(), std::size_t{1}, "Self-loop component");

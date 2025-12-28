@@ -25,7 +25,7 @@ int main() {
     std::cout << "=== Dijkstra's Algorithm with C++20 Ranges ===\n\n";
     
     // Create a weighted graph
-    adjacency_list<directed_tag, VertexProps, EdgeProps> g(6);
+    simple_adjacency_list<directed_tag, VertexProps, EdgeProps> g(6);
     
     // Set vertex names
     g[0].name = "A";

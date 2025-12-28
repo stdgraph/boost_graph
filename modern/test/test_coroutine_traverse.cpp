@@ -33,8 +33,8 @@ void check(bool condition, const char* test_name) {
 //     |     |
 //     3 --- 4
 
-bgl::adjacency_list<bgl::undirected_tag> make_test_graph() {
-    bgl::adjacency_list<bgl::undirected_tag> g;
+bgl::simple_adjacency_list<bgl::undirected_tag> make_test_graph() {
+    bgl::simple_adjacency_list<bgl::undirected_tag> g;
     for (int i = 0; i < 5; ++i) g.add_vertex();
     g.add_edge(0, 1);
     g.add_edge(1, 2);
@@ -240,7 +240,7 @@ void test_bfs_traverse_all() {
     std::cout << "Testing bfs_traverse_all with disconnected graph...\n";
     
     // Create disconnected graph: 0-1-2 and 3-4
-    bgl::adjacency_list<bgl::undirected_tag> g;
+    bgl::simple_adjacency_list<bgl::undirected_tag> g;
     for (int i = 0; i < 5; ++i) g.add_vertex();
     g.add_edge(0, 1);
     g.add_edge(1, 2);
@@ -264,7 +264,7 @@ void test_bfs_traverse_all() {
 void test_dfs_traverse_all() {
     std::cout << "Testing dfs_traverse_all with disconnected graph...\n";
     
-    bgl::adjacency_list<bgl::undirected_tag> g;
+    bgl::simple_adjacency_list<bgl::undirected_tag> g;
     for (int i = 0; i < 5; ++i) g.add_vertex();
     g.add_edge(0, 1);
     g.add_edge(1, 2);
@@ -313,7 +313,7 @@ void test_directed_traversal() {
     //           |
     //           v
     //           3
-    bgl::adjacency_list<bgl::directed_tag> g;
+    bgl::simple_adjacency_list<bgl::directed_tag> g;
     for (int i = 0; i < 4; ++i) g.add_vertex();
     g.add_edge(0, 1);
     g.add_edge(1, 2);
@@ -343,7 +343,7 @@ void test_directed_traversal() {
 void test_single_vertex() {
     std::cout << "Testing traversal on single vertex graph...\n";
     
-    bgl::adjacency_list<bgl::directed_tag> g;
+    bgl::simple_adjacency_list<bgl::directed_tag> g;
     g.add_vertex();
     
     std::vector<std::size_t> bfs_order;
@@ -370,7 +370,7 @@ void test_linear_graph() {
     std::cout << "Testing traversal on linear graph...\n";
     
     // 0 -> 1 -> 2 -> 3 -> 4
-    bgl::adjacency_list<bgl::directed_tag> g;
+    bgl::simple_adjacency_list<bgl::directed_tag> g;
     for (int i = 0; i < 5; ++i) g.add_vertex();
     for (int i = 0; i < 4; ++i) g.add_edge(i, i + 1);
     

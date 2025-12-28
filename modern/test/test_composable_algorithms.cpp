@@ -47,7 +47,7 @@ void test_component_view() {
     // Component 0: 0-1-2
     // Component 1: 3-4
     // Component 2: 5
-    adjacency_list<undirected_tag> g(6);
+    simple_adjacency_list<undirected_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(3, 4);
@@ -97,7 +97,7 @@ void test_component_filters() {
     std::cout << "Testing component filters...\n";
     
     // Create graph with components of different sizes
-    adjacency_list<undirected_tag> g(10);
+    simple_adjacency_list<undirected_tag> g(10);
     g.add_edge(0, 1);  // Component 0: size 2
     g.add_edge(2, 3);  // Component 1: size 4
     g.add_edge(3, 4);
@@ -143,7 +143,7 @@ void test_bfs_view() {
     //   1   2
     //  /     \
     // 3       4
-    adjacency_list<undirected_tag> g(5);
+    simple_adjacency_list<undirected_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 3);
@@ -193,7 +193,7 @@ void test_bfs_view() {
 void test_filter_vertices() {
     std::cout << "Testing filter_vertices...\n";
     
-    adjacency_list<undirected_tag> g(10);
+    simple_adjacency_list<undirected_tag> g(10);
     
     // Filter even vertices
     auto even = vertices(g) | views::filter_vertices([](auto v) { return v % 2 == 0; });
@@ -221,7 +221,7 @@ void test_k_core() {
     std::cout << "Testing k-core...\n";
     
     // Create a graph where some vertices have high degree
-    adjacency_list<undirected_tag> g(6);
+    simple_adjacency_list<undirected_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(0, 3);
@@ -253,7 +253,7 @@ void test_k_core() {
 void test_neighbors() {
     std::cout << "Testing neighbor queries...\n";
     
-    adjacency_list<undirected_tag> g(5);
+    simple_adjacency_list<undirected_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(0, 3);
@@ -294,7 +294,7 @@ void test_neighbors() {
 void test_count_vertices_if() {
     std::cout << "Testing count_vertices_if...\n";
     
-    adjacency_list<undirected_tag> g(10);
+    simple_adjacency_list<undirected_tag> g(10);
     g.add_edge(0, 1);
     g.add_edge(2, 3);
     g.add_edge(3, 4);
@@ -317,7 +317,7 @@ void test_count_vertices_if() {
 void test_degree_distribution() {
     std::cout << "Testing degree distribution...\n";
     
-    adjacency_list<undirected_tag> g(6);
+    simple_adjacency_list<undirected_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 2);
@@ -340,7 +340,7 @@ void test_pipeline_composition() {
     std::cout << "Testing pipeline composition...\n";
     
     // Create graph with multiple components
-    adjacency_list<undirected_tag> g(10);
+    simple_adjacency_list<undirected_tag> g(10);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -372,7 +372,7 @@ void test_real_world_example() {
     std::cout << "Testing real-world example...\n";
     
     // Social network: find users within 2 hops who have high degree
-    adjacency_list<undirected_tag> g(10);
+    simple_adjacency_list<undirected_tag> g(10);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(0, 3);
@@ -405,7 +405,7 @@ void test_real_world_example() {
 void test_transforms() {
     std::cout << "Testing transforms...\n";
     
-    adjacency_list<undirected_tag> g(8);
+    simple_adjacency_list<undirected_tag> g(8);
     g.add_edge(0, 1);
     g.add_edge(1, 2);  // Component 0: 3 vertices
     

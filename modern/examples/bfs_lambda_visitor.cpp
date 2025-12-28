@@ -6,6 +6,7 @@
 
 #include <bgl/modern/adjacency_list.hpp>
 #include <bgl/modern/breadth_first_search.hpp>
+#include <bgl/modern/visitor_callbacks.hpp>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -21,7 +22,7 @@ int main() {
     std::cout << "=== BFS with Lambda Visitors ===\n\n";
     
     // Create a graph representing a directory structure
-    adjacency_list<directed_tag, VertexProps> g(10);
+    simple_adjacency_list<directed_tag, VertexProps> g(10);
     
     g[0] = {"root", 0};
     g[1] = {"home", 1};
@@ -61,13 +62,11 @@ int main() {
     // Example 2: Tree edge tracking
     std::cout << "\n2. Tree structure:\n";
     {
-        bfs_callbacks callbacks{
-            .on_tree_edge = [&g](auto e, const auto& graph) {
-                auto src = source(e, graph);
-                auto tgt = target(e, graph);
-                std::cout << "  " << g[src].name << " -> " << g[tgt].name << "\n";
-            }
-        };
+        auto callbacks = on_tree_edge([&g](auto e, const auto& graph) {
+            auto src = source(e, graph);
+            auto tgt = target(e, graph);
+            std::cout << "  " << g[src].name << " -> " << g[tgt].name << "\n";
+        });
         
         breadth_first_search(g, 0, callbacks);
     }
@@ -77,11 +76,9 @@ int main() {
     {
         std::vector<std::vector<std::string>> levels(4);
         
-        bfs_callbacks callbacks{
-            .on_discover_vertex = [&](auto v, const auto&) {
-                levels[g[v].value].push_back(g[v].name);
-            }
-        };
+        auto callbacks = on_discover_vertex([&](auto v, const auto&) {
+            levels[g[v].value].push_back(g[v].name);
+        });
         
         breadth_first_search(g, 0, callbacks);
         
@@ -100,23 +97,18 @@ int main() {
         int edge_count = 0;
         int vertex_count = 0;
         
-        bfs_callbacks callbacks{
-            .on_initialize_vertex = [&](auto v, const auto& graph) {
-                vertex_count++;
-            },
-            .on_discover_vertex = [&g](auto v, const auto&) {
-                std::cout << "  → Discovered " << g[v].name << "\n";
-            },
-            .on_examine_vertex = [&g](auto v, const auto&) {
-                std::cout << "  ⊙ Examining " << g[v].name << "\n";
-            },
-            .on_tree_edge = [&](auto e, const auto& graph) {
-                edge_count++;
-            },
-            .on_finish_vertex = [&g](auto v, const auto&) {
-                std::cout << "  ✓ Finished " << g[v].name << "\n";
-            }
-        };
+        // For multiple callbacks, chain the helper functions
+        auto callbacks = bfs_callbacks(
+            [&](auto v, const auto& graph) { vertex_count++; },  // initialize
+            [&g](auto v, const auto&) { std::cout << "  → Discovered " << g[v].name << "\n"; },  // discover
+            [&g](auto v, const auto&) { std::cout << "  ⊙ Examining " << g[v].name << "\n"; },  // examine
+            null_callback{},  // examine_edge
+            [&](auto e, const auto& graph) { edge_count++; },  // tree_edge
+            null_callback{},  // non_tree_edge
+            null_callback{},  // gray_target
+            null_callback{},  // black_target
+            [&g](auto v, const auto&) { std::cout << "  ✓ Finished " << g[v].name << "\n"; }  // finish
+        );
         
         breadth_first_search(g, 0, callbacks);
         
@@ -158,18 +150,32 @@ int main() {
             double avg_out_degree = 0.0;
         } stats;
         
-        bfs_callbacks callbacks{
-            .on_examine_vertex = [&](auto v, const auto& graph) {
-                stats.total_vertices++;
-                auto degree = out_degree(v, graph);
-                stats.avg_out_degree += degree;
-                
-                if (degree == 0) {
-                    stats.leaf_nodes++;
-                } else {
-                    stats.internal_nodes++;
-                }
+        // Multiple events require the full bfs_callbacks struct
+        // We pass all callbacks in constructor order
+        auto examine_cb = [&](auto v, const auto& graph) {
+            stats.total_vertices++;
+            auto degree = out_degree(v, graph);
+            stats.avg_out_degree += degree;
+            
+            if (degree == 0) {
+                stats.leaf_nodes++;
+            } else {
+                stats.internal_nodes++;
             }
+        };
+        
+        auto callbacks = bfs_callbacks<
+            null_callback,  // initialize
+            null_callback,  // discover
+            decltype(examine_cb),  // examine
+            null_callback,  // examine_edge
+            null_callback,  // tree_edge
+            null_callback,  // non_tree_edge
+            null_callback,  // gray_target
+            null_callback,  // black_target
+            null_callback   // finish
+        >{
+            .on_examine_vertex = examine_cb
         };
         
         breadth_first_search(g, 0, callbacks);

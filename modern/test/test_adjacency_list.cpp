@@ -14,6 +14,10 @@
 
 using namespace bgl;
 
+// Use the backward-compatible simple_adjacency_list alias for tests
+// New full API: adjacency_list<OutEdgeListS, VertexListS, DirectedS, VertexProperty, EdgeProperty, GraphProperty>
+// Simple API:   simple_adjacency_list<DirectedS, VertexProperty, EdgeProperty, GraphProperty>
+
 // =============================================================================
 // Test Basic Construction
 // =============================================================================
@@ -21,7 +25,7 @@ using namespace bgl;
 void test_default_construction() {
     std::cout << "  Testing default construction... ";
     
-    adjacency_list<directed_tag> g;
+    simple_adjacency_list<directed_tag> g;
     assert(num_vertices(g) == 0);
     assert(num_edges(g) == 0);
     
@@ -31,7 +35,7 @@ void test_default_construction() {
 void test_sized_construction() {
     std::cout << "  Testing sized construction... ";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     assert(num_vertices(g) == 5);
     assert(num_edges(g) == 0);
     
@@ -52,7 +56,7 @@ void test_sized_construction() {
 void test_add_vertex() {
     std::cout << "  Testing add_vertex... ";
     
-    adjacency_list<directed_tag> g;
+    simple_adjacency_list<directed_tag> g;
     auto v0 = g.add_vertex();
     auto v1 = g.add_vertex();
     auto v2 = g.add_vertex();
@@ -73,7 +77,7 @@ void test_vertex_properties() {
         int id = 0;
     };
     
-    adjacency_list<directed_tag, VertexData> g;
+    simple_adjacency_list<directed_tag, VertexData> g;
     auto v0 = g.add_vertex({.name = "Alice", .id = 1});
     auto v1 = g.add_vertex({.name = "Bob", .id = 2});
     
@@ -96,7 +100,7 @@ void test_vertex_properties() {
 void test_add_edge() {
     std::cout << "  Testing add_edge... ";
     
-    adjacency_list<directed_tag> g(3);
+    simple_adjacency_list<directed_tag> g(3);
     
     auto [e01, added1] = g.add_edge(0, 1);
     auto [e12, added2] = g.add_edge(1, 2);
@@ -121,7 +125,7 @@ void test_edge_properties() {
         std::string label;
     };
     
-    adjacency_list<directed_tag, no_property, EdgeData> g(3);
+    simple_adjacency_list<directed_tag, no_property, EdgeData> g(3);
     
     auto [e01, _1] = g.add_edge(0, 1, {.weight = 1.5, .label = "e01"});
     auto [e12, _2] = g.add_edge(1, 2, {.weight = 2.5, .label = "e12"});
@@ -144,7 +148,7 @@ void test_edge_properties() {
 void test_out_edges() {
     std::cout << "  Testing out_edges... ";
     
-    adjacency_list<directed_tag> g(4);
+    simple_adjacency_list<directed_tag> g(4);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(0, 3);
@@ -178,7 +182,7 @@ void test_out_edges() {
 void test_undirected_graph() {
     std::cout << "  Testing undirected graph... ";
     
-    adjacency_list<undirected_tag> g(3);
+    simple_adjacency_list<undirected_tag> g(3);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     
@@ -210,7 +214,7 @@ void test_undirected_graph() {
 void test_bidirectional_graph() {
     std::cout << "  Testing bidirectional graph... ";
     
-    adjacency_list<bidirectional_tag> g(3);
+    simple_adjacency_list<bidirectional_tag> g(3);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 2);
@@ -257,7 +261,7 @@ void test_full_properties() {
         int version = 1;
     };
     
-    adjacency_list<directed_tag, Vertex, Edge, Graph> g;
+    simple_adjacency_list<directed_tag, Vertex, Edge, Graph> g;
     
     auto v0 = g.add_vertex({.name = "Node A", .x = 0.0, .y = 0.0});
     auto v1 = g.add_vertex({.name = "Node B", .x = 1.0, .y = 0.0});
@@ -282,7 +286,7 @@ void test_full_properties() {
 void test_range_compatibility() {
     std::cout << "  Testing range compatibility... ";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 2);
@@ -316,7 +320,7 @@ void test_concepts() {
     std::cout << "  Testing concept satisfaction... ";
     
     // Verify adjacency_list satisfies our concepts
-    using G = adjacency_list<directed_tag>;
+    using G = simple_adjacency_list<directed_tag>;
     
     static_assert(Graph<G>, "adjacency_list must satisfy Graph concept");
     static_assert(VertexListGraph<G>, "adjacency_list must satisfy VertexListGraph");

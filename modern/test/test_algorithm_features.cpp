@@ -23,7 +23,7 @@ using namespace bgl;
 void test_bfs_structured_return() {
     std::cout << "Testing BFS structured return...\n";
     
-    adjacency_list<directed_tag> g(6);
+    simple_adjacency_list<directed_tag> g(6);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 3);
@@ -51,7 +51,7 @@ void test_dijkstra_structured_return() {
     struct EdgeProps {
         double weight;
     };
-    adjacency_list<directed_tag, no_property, EdgeProps> g(4);
+    simple_adjacency_list<directed_tag, no_property, EdgeProps> g(4);
     
     g.add_edge(0, 1, {.weight = 1.0});
     g.add_edge(1, 2, {.weight = 2.0});
@@ -77,7 +77,7 @@ void test_dijkstra_structured_return() {
 void test_dfs_structured_return() {
     std::cout << "Testing DFS structured return...\n";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 3);
@@ -100,7 +100,7 @@ void test_dfs_structured_return() {
 void test_bfs_lambda_visitor() {
     std::cout << "Testing BFS with lambda visitor...\n";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(0, 2);
     g.add_edge(1, 3);
@@ -123,7 +123,7 @@ void test_bfs_lambda_visitor() {
 void test_dfs_lambda_visitor() {
     std::cout << "Testing DFS with lambda visitor...\n";
     
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 0);  // Back edge
@@ -150,7 +150,7 @@ void test_dijkstra_lambda_visitor() {
     struct EdgeProps {
         double weight;
     };
-    adjacency_list<directed_tag, no_property, EdgeProps> g(3);
+    simple_adjacency_list<directed_tag, no_property, EdgeProps> g(3);
     
     g.add_edge(0, 1, {.weight = 1.0});
     g.add_edge(1, 2, {.weight = 2.0});
@@ -176,7 +176,7 @@ void test_dijkstra_params() {
     struct EdgeProps {
         double weight;
     };
-    adjacency_list<directed_tag, no_property, EdgeProps> g(4);
+    simple_adjacency_list<directed_tag, no_property, EdgeProps> g(4);
     
     g.add_edge(0, 1, {.weight = 2.0});
     g.add_edge(1, 2, {.weight = 3.0});
@@ -195,7 +195,7 @@ void test_dijkstra_params() {
 void test_bfs_params() {
     std::cout << "Testing BFS with callback parameter...\n";
     
-    adjacency_list<directed_tag> g(4);
+    simple_adjacency_list<directed_tag> g(4);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -221,7 +221,7 @@ void test_bfs_params() {
 void test_return_value_usage() {
     std::cout << "Testing return value direct usage...\n";
     
-    adjacency_list<directed_tag> g(3);
+    simple_adjacency_list<directed_tag> g(3);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     
@@ -237,7 +237,7 @@ void test_chained_algorithms() {
     struct EdgeProps {
         double weight;
     };
-    adjacency_list<directed_tag, no_property, EdgeProps> g(4);
+    simple_adjacency_list<directed_tag, no_property, EdgeProps> g(4);
     
     g.add_edge(0, 1, {.weight = 1.0});
     g.add_edge(1, 2, {.weight = 1.0});

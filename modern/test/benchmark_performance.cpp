@@ -94,7 +94,7 @@ void benchmark_bfs() {
     };
     
     for (const auto& [num_vertices, num_edges] : test_cases) {
-        auto g = create_random_graph<adjacency_list<directed_tag>>(num_vertices, num_edges);
+        auto g = create_random_graph<simple_adjacency_list<directed_tag>>(num_vertices, num_edges);
         
         auto time = time_execution([&]() {
             auto result = breadth_first_search(g, 0);
@@ -123,7 +123,7 @@ void benchmark_dfs() {
     };
     
     for (const auto& [num_vertices, num_edges] : test_cases) {
-        auto g = create_random_graph<adjacency_list<directed_tag>>(num_vertices, num_edges);
+        auto g = create_random_graph<simple_adjacency_list<directed_tag>>(num_vertices, num_edges);
         
         auto time = time_execution([&]() {
             auto result = depth_first_search(g, 0);
@@ -156,7 +156,7 @@ void benchmark_dijkstra() {
             double weight;
         };
         
-        adjacency_list<directed_tag, no_property, EdgeProps> g(num_vertices);
+        simple_adjacency_list<directed_tag, no_property, EdgeProps> g(num_vertices);
         std::mt19937 rng(42);
         std::uniform_int_distribution<std::size_t> vertex_dist(0, num_vertices - 1);
         std::uniform_real_distribution<double> weight_dist(1.0, 100.0);
@@ -199,7 +199,7 @@ void benchmark_graph_construction() {
     
     for (const auto& [num_vertices, num_edges] : test_cases) {
         auto time = time_execution([&]() {
-            adjacency_list<directed_tag> g(num_vertices);
+            simple_adjacency_list<directed_tag> g(num_vertices);
             std::mt19937 rng(42);
             std::uniform_int_distribution<std::size_t> dist(0, num_vertices - 1);
             
@@ -233,7 +233,7 @@ void benchmark_property_access() {
             double data;
         };
         
-        adjacency_list<directed_tag, VertexProps> g(num_vertices);
+        simple_adjacency_list<directed_tag, VertexProps> g(num_vertices);
         
         // Initialize properties
         for (auto v : vertices(g)) {
@@ -265,7 +265,7 @@ void benchmark_traversals() {
     std::vector<std::size_t> test_sizes = {1000, 10000, 100000};
     
     for (auto num_vertices : test_sizes) {
-        adjacency_list<directed_tag> g(num_vertices);
+        simple_adjacency_list<directed_tag> g(num_vertices);
         
         // Create a chain graph for predictable iteration
         for (std::size_t i = 0; i < num_vertices - 1; ++i) {
@@ -300,7 +300,7 @@ void benchmark_edge_iteration() {
     };
     
     for (const auto& [num_vertices, num_edges] : test_cases) {
-        auto g = create_random_graph<adjacency_list<directed_tag>>(num_vertices, num_edges);
+        auto g = create_random_graph<simple_adjacency_list<directed_tag>>(num_vertices, num_edges);
         
         auto time = time_execution([&]() {
             std::size_t count = 0;

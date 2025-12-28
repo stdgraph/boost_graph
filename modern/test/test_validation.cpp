@@ -20,7 +20,7 @@ void test_valid_graph() {
     std::cout << "Testing valid graph...\n";
     
     // Create a simple valid graph
-    adjacency_list<undirected_t> g(5);
+    simple_adjacency_list<undirected_t> g(5);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -38,7 +38,7 @@ void test_validation_options() {
     std::cout << "Testing validation options...\n";
     
     // Graph with self-loop
-    adjacency_list<directed_t> g(3);
+    simple_adjacency_list<directed_t> g(3);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(1, 1);  // Self-loop
@@ -65,7 +65,7 @@ void test_validation_options() {
 void test_self_loops() {
     std::cout << "Testing self-loop detection...\n";
     
-    adjacency_list<directed_t> g(4);
+    simple_adjacency_list<directed_t> g(4);
     g.add_edge(0, 0);  // Self-loop
     g.add_edge(0, 1);
     g.add_edge(2, 2);  // Another self-loop
@@ -86,7 +86,7 @@ void test_parallel_edges() {
     std::cout << "Testing parallel edge detection...\n";
     
     // Use vecS for edge list to allow parallel edges
-    adjacency_list<directed_t, vecS, vecS> g(3);
+    adjacency_list<vecS, vecS, directed_t> g(3);
     g.add_edge(0, 1);
     g.add_edge(0, 1);  // Parallel edge
     g.add_edge(1, 2);
@@ -107,7 +107,7 @@ void test_parallel_edges() {
 void test_error_formatting() {
     std::cout << "Testing error formatting...\n";
     
-    adjacency_list<directed_t> g(3);
+    simple_adjacency_list<directed_t> g(3);
     g.add_edge(0, 0);  // Self-loop
     
     validation_options opts;
@@ -133,7 +133,7 @@ void test_error_formatting() {
 void test_directed_graph() {
     std::cout << "Testing directed graph validation...\n";
     
-    adjacency_list<directed_t> g(4);
+    simple_adjacency_list<directed_t> g(4);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -148,7 +148,7 @@ void test_directed_graph() {
 void test_undirected_graph() {
     std::cout << "Testing undirected graph validation...\n";
     
-    adjacency_list<undirected_t> g(5);
+    simple_adjacency_list<undirected_t> g(5);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -164,7 +164,7 @@ void test_undirected_graph() {
 void test_bidirectional_graph() {
     std::cout << "Testing bidirectional graph validation...\n";
     
-    adjacency_list<bidirectional_t> g(4);
+    simple_adjacency_list<bidirectional_t> g(4);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
@@ -179,7 +179,7 @@ void test_bidirectional_graph() {
 void test_empty_graph() {
     std::cout << "Testing empty graph validation...\n";
     
-    adjacency_list<directed_t> g(0);
+    simple_adjacency_list<directed_t> g(0);
     
     auto result = validate_graph(g);
     assert(result.is_valid());
@@ -191,7 +191,7 @@ void test_empty_graph() {
 void test_single_vertex() {
     std::cout << "Testing single vertex graph...\n";
     
-    adjacency_list<directed_t> g(1);
+    simple_adjacency_list<directed_t> g(1);
     
     auto result = validate_graph(g);
     assert(result.is_valid());
@@ -203,7 +203,7 @@ void test_complete_graph() {
     std::cout << "Testing complete graph...\n";
     
     const std::size_t n = 5;
-    adjacency_list<undirected_t> g(n);
+    simple_adjacency_list<undirected_t> g(n);
     
     // Add all edges to make complete graph
     for (std::size_t i = 0; i < n; ++i) {
@@ -236,7 +236,7 @@ void test_adjacency_matrix() {
 void test_minimal_validation() {
     std::cout << "Testing minimal validation...\n";
     
-    adjacency_list<directed_t> g(3);
+    simple_adjacency_list<directed_t> g(3);
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     
@@ -250,7 +250,7 @@ void test_strict_validation() {
     std::cout << "Testing strict validation...\n";
     
     // Graph with self-loop and parallel edges
-    adjacency_list<directed_t, vecS, vecS> g(3);
+    adjacency_list<vecS, vecS, directed_t> g(3);
     g.add_edge(0, 0);  // Self-loop
     g.add_edge(0, 1);
     g.add_edge(0, 1);  // Parallel edge
@@ -267,7 +267,7 @@ void test_validate_or_throw() {
     std::cout << "Testing validate_or_throw...\n";
     
     // Valid graph should not throw
-    adjacency_list<directed_t> g1(3);
+    simple_adjacency_list<directed_t> g1(3);
     g1.add_edge(0, 1);
     g1.add_edge(1, 2);
     
@@ -280,7 +280,7 @@ void test_validate_or_throw() {
     assert(!threw);
     
     // Invalid graph should throw
-    adjacency_list<directed_t> g2(2);
+    simple_adjacency_list<directed_t> g2(2);
     g2.add_edge(0, 0);  // Self-loop
     
     validation_options opts;
@@ -302,13 +302,13 @@ void test_validate_or_throw() {
 void test_is_valid_graph() {
     std::cout << "Testing is_valid_graph...\n";
     
-    adjacency_list<directed_t> g1(3);
+    simple_adjacency_list<directed_t> g1(3);
     g1.add_edge(0, 1);
     g1.add_edge(1, 2);
     
     assert(is_valid_graph(g1));
     
-    adjacency_list<directed_t> g2(2);
+    simple_adjacency_list<directed_t> g2(2);
     g2.add_edge(0, 0);
     
     validation_options opts;
@@ -322,7 +322,7 @@ void test_is_valid_graph() {
 void test_complex_graph() {
     std::cout << "Testing complex graph structure...\n";
     
-    adjacency_list<bidirectional_t> g(10);
+    simple_adjacency_list<bidirectional_t> g(10);
     
     // Create a more complex structure
     g.add_edge(0, 1);

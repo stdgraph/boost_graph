@@ -27,7 +27,7 @@ namespace positive_tests {
 // -----------------------------------------------------------------------------
 
 // Directed adjacency_list
-using DirectedAL = adjacency_list<directed_tag>;
+using DirectedAL = simple_adjacency_list<directed_tag>;
 static_assert(Graph<DirectedAL>, "adjacency_list<directed> should satisfy Graph");
 static_assert(IncidenceGraph<DirectedAL>, "adjacency_list<directed> should satisfy IncidenceGraph");
 static_assert(VertexListGraph<DirectedAL>, "adjacency_list<directed> should satisfy VertexListGraph");
@@ -40,7 +40,7 @@ static_assert(TraversableGraph<DirectedAL>, "adjacency_list<directed> should sat
 // static_assert(PropertyGraph<DirectedAL>, "adjacency_list<directed> should satisfy PropertyGraph");
 
 // Undirected adjacency_list
-using UndirectedAL = adjacency_list<undirected_tag>;
+using UndirectedAL = simple_adjacency_list<undirected_tag>;
 static_assert(Graph<UndirectedAL>, "adjacency_list<undirected> should satisfy Graph");
 static_assert(IncidenceGraph<UndirectedAL>, "adjacency_list<undirected> should satisfy IncidenceGraph");
 static_assert(VertexListGraph<UndirectedAL>, "adjacency_list<undirected> should satisfy VertexListGraph");
@@ -48,7 +48,7 @@ static_assert(VertexListGraph<UndirectedAL>, "adjacency_list<undirected> should 
 static_assert(TraversableGraph<UndirectedAL>, "adjacency_list<undirected> should satisfy TraversableGraph");
 
 // Bidirectional adjacency_list
-using BidirectionalAL = adjacency_list<bidirectional_tag>;
+using BidirectionalAL = simple_adjacency_list<bidirectional_tag>;
 static_assert(Graph<BidirectionalAL>, "adjacency_list<bidirectional> should satisfy Graph");
 static_assert(IncidenceGraph<BidirectionalAL>, "adjacency_list<bidirectional> should satisfy IncidenceGraph");
 static_assert(BidirectionalGraph<BidirectionalAL>, "adjacency_list<bidirectional> should satisfy BidirectionalGraph");
@@ -110,7 +110,7 @@ struct EdgeProps {
 };
 
 // adjacency_list template: <DirectedS, VertexProperty, EdgeProperty, GraphProperty>
-using CustomPropsAL = adjacency_list<directed_tag, VertexProps, EdgeProps>;
+using CustomPropsAL = simple_adjacency_list<directed_tag, VertexProps, EdgeProps>;
 static_assert(Graph<CustomPropsAL>, "adjacency_list with custom properties should satisfy Graph");
 static_assert(IncidenceGraph<CustomPropsAL>, "adjacency_list with custom properties should satisfy IncidenceGraph");
 static_assert(VertexPropertyGraph<CustomPropsAL>, "adjacency_list with custom properties should satisfy VertexPropertyGraph");
@@ -273,7 +273,7 @@ namespace property_map_tests {
 
 // Test with simple lambda
 void test_lambda_property_maps() {
-    adjacency_list<directed_tag> g(5);
+    simple_adjacency_list<directed_tag> g(5);
     
     // Readable property map (lambda with capture)
     std::vector<int> distances(5, 0);
@@ -329,7 +329,7 @@ void test_property_map_negative() {
 namespace compound_concept_tests {
 
 // Test that compound concepts work correctly
-using TestGraph = adjacency_list<directed_tag>;
+using TestGraph = simple_adjacency_list<directed_tag>;
 
 static_assert(VertexListIncidenceGraph<TestGraph>, 
     "adjacency_list should satisfy VertexListIncidenceGraph");
@@ -337,7 +337,7 @@ static_assert(TraversableGraph<TestGraph>,
     "adjacency_list should satisfy TraversableGraph");
 
 // Test with bidirectional
-using BidiGraph = adjacency_list<bidirectional_tag>;
+using BidiGraph = simple_adjacency_list<bidirectional_tag>;
 static_assert(VertexListIncidenceGraph<BidiGraph>,
     "bidirectional adjacency_list should satisfy VertexListIncidenceGraph");
 static_assert(TraversableGraph<BidiGraph>,
