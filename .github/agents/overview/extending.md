@@ -102,10 +102,10 @@ struct my_algorithm_default_visitor {
 };
 ```
 
-See [`bfs_visitor.hpp`](../../../include/boost/graph/bfs_visitor.hpp) and
-[`dfs_visitor.hpp`](../../../include/boost/graph/dfs_visitor.hpp) for
-the BGL reference implementations, and [architecture.md](architecture.md)
-§ Visitor pattern for the event-point catalogue.
+See [`visitors.hpp`](../../../include/boost/graph/visitors.hpp) for the
+shared visitor utility machinery used across BGL, and
+[architecture.md](architecture.md) § Visitor pattern for the event-point
+catalogue.
 
 ### 1.4 Testing a new algorithm
 

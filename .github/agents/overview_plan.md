@@ -414,24 +414,24 @@ Summarize:
 
 For each document created in Phase C:
 
-- [ ] Verify every `include/boost/graph/` link targets a file that actually exists
-- [ ] Verify every `doc/` link targets a file that actually exists
-- [ ] Check the `edmunds_karp_max_flow.hpp` alias situation and document correctly
-- [ ] Re-read `overview.md` as an agent: can you locate the right header for any
+- [x] Verify every `include/boost/graph/` link targets a file that actually exists
+- [x] Verify every `doc/` link targets a file that actually exists
+- [x] Check the `edmunds_karp_max_flow.hpp` alias situation and document correctly
+- [x] Re-read `overview.md` as an agent: can you locate the right header for any
       algorithm family in ≤ 2 hops?
-- [ ] Re-read `overview.md` as a newcomer: is the first paragraph self-explanatory
+- [x] Re-read `overview.md` as a newcomer: is the first paragraph self-explanatory
       without prior Boost knowledge?
-- [ ] Check for duplicated content across `architecture.md` and `concepts.md`;
+- [x] Check for duplicated content across `architecture.md` and `concepts.md`;
       consolidate if found
-- [ ] Confirm `overview.md` fits on one screen (~60–120 lines)
+- [x] Confirm `overview.md` fits on one screen (~60–120 lines)
 
 ---
 
 ## Phase E — Maintenance Hooks
 
-- [ ] The "How to update" note and last-reviewed stamp are in `overview.md` (done in C.1)
-- [ ] Add a trigger note to [overview_strategy.md](overview_strategy.md)
-      if any revision trigger fires during production
+- [x] The "How to update" note and last-reviewed stamp are in `overview.md` (done in C.1)
+- [x] No revision trigger fired during production (docs-only run; no structural
+      changes to headers, build files, or top-level layout)
 
 ---
 
@@ -457,5 +457,5 @@ For each document created in Phase C:
 | C.8 `extending.md` | ✅ Complete | `.github/agents/overview/extending.md` |
 | C.9 `glossary.md` | ✅ Complete | `.github/agents/overview/glossary.md` |
 | C.10 `purpose.md` | ✅ Complete | `.github/agents/overview/purpose.md` |
-| **Phase D — Verification** | ⬜ Not started | |
-| **Phase E — Maintenance Hooks** | ⬜ Not started | |
+| **Phase D — Verification** | ✅ Complete | Links validated; alias note confirmed; overview is 68 lines; broken visitor links fixed in `extending.md` |
+| **Phase E — Maintenance Hooks** | ✅ Complete | Hook note already in `overview.md`; no triggers fired |
