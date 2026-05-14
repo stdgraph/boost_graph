@@ -76,7 +76,7 @@ As of this writing:
    take iteration counts as arguments (`betweenness_centrality_test.cpp : 100`,
    `dijkstra_no_color_map_compare.cpp : 10000`,
    `random_matching_test.cpp : 1000 1020`). These should be in a separate
-   `benchmark/` target.
+   `benchmarks/` target.
 7. **Numbered-variant tests.** `graph.cpp` and `property_iter.cpp` each have
    nine near-identical Jam lines parameterized by `<define>TEST=N` with no
    documentation of what each `N` means.
@@ -188,14 +188,15 @@ are mechanical and low-risk; later steps require design discussion.
    touched during this phase. Track remaining migrations as follow-up.
 10. **Resolve `*2` variants.** Either merge or rename
     (`..._small.cpp`/`..._random.cpp`/`..._regression.cpp` etc.).
-11. **Either remove or re-enable** the commented-out tests in the Jamfile;
-    if kept, attach a `# TODO(#issue):` line.
+11. **Either re-enable or keep commented-out** tests in the Jamfile;
+   if kept, attach a `# TODO(#issue):` line. Do not delete them during this
+   phase.
 
 ### Phase D — CMake parity and CI tiers
 
-11. **Add `test/CMakeLists.txt`** that lists the same tests via
+12. **Add `test/CMakeLists.txt`** that lists the same tests via
     `add_executable` + `add_test`, mirroring the Jam structure.
-12. **Tag tests by cost** (e.g. via Jam features `<test-info>` and CTest
+13. **Tag tests by cost** (e.g. via Jam features `<test-info>` and CTest
     `LABELS`) so CI can pick a fast subset.
 
 ### Phase E — Coverage preparation (done during this effort, before coverage is run)
@@ -204,24 +205,24 @@ Coverage analysis will be done as a **separate, later effort**. However,
 several decisions during Phases A–D affect how clean and actionable that
 report will be. Make these choices now:
 
-13. **Record the intent of each `TEST=N` variant** (step 6 above). Coverage
+14. **Record the intent of each `TEST=N` variant** (step 6 above). Coverage
     of `graph.cpp` and `property_iter.cpp` is uninterpretable until you know
     which code paths each `N` is meant to exercise. Add a comment block in
     each source listing the meaning of each value.
-14. **Document what the `*2` variants cover** before merging or renaming
-    them (step 9). Add a brief comment at the top of each file: what is
+15. **Document what the `*2` variants cover** before merging or renaming
+   them (step 10). Add a brief comment at the top of each file: what is
     unique about this variant vs. the primary test? This makes the coverage
     merge/delete decision trivial when the time comes.
-15. **Do not delete commented-out tests** (`adj_list_invalidation.cpp`,
+16. **Do not delete commented-out tests** (`adj_list_invalidation.cpp`,
     `relaxed_heap_test.cpp`) during Phase C. Attach a `# TODO(#issue):`
     comment and leave them for the coverage phase to evaluate — they may
     cover paths that no active test reaches.
-16. **Ensure `test/CMakeLists.txt`** (step 11) uses a structure amenable to
+17. **Ensure `test/CMakeLists.txt`** (step 12) uses a structure amenable to
     a coverage preset: keep each test as a separate `add_executable` target
     (not one combined binary) so per-test coverage deltas are visible.
     Avoid `file(GLOB)` for test discovery — explicit lists ensure coverage
     runs stay in sync with what CI actually builds.
-17. **Create a `coverage/` subdirectory** under `.github/` (or reuse
+18. **Create a `coverage/` subdirectory** under `.github/` (or reuse
     `.github/workflows/`) as a placeholder for the future instrumentation
     preset and reporting scripts. Leave it empty for now. This reserves the
     convention and avoids ad-hoc placement later.
@@ -249,9 +250,9 @@ report will be. Make these choices now:
 |---|---|---|
 | A | Mechanical moves (headers, concepts, regressions, data) | Nothing |
 | B | Jamfile split into per-area subfiles | Phase A |
-| C | Naming cleanup, merge `*2` variants, resolve dead tests | Phase E prep work |
+| C | Naming cleanup, merge `*2` variants, resolve dead tests | Phase B |
 | D | `test/CMakeLists.txt` + `add_test` + cost tagging | Phase B |
-| E prep | Document `TEST=N` intent, `*2` comments, coverage layout | Phase D |
+| E prep | Document `TEST=N` intent, `*2` comments, coverage layout | Phases C and D |
 | Coverage | Instrumentation, CI pipeline, threshold policy | Phase E prep |
 
 ---
@@ -292,10 +293,15 @@ should:
 11. **When in doubt about category**, prefer `algorithms/misc/` over
     inventing a new subdirectory — categories should be earned by having
     at least three related tests.
+12. **Keep overview documents current.** After completing any phase step or
+    adding a new test, update [overview.md](overview.md) (and any other
+    companion overview documents) to reflect the new state: revised directory
+    layout, changed file counts, newly settled decisions, or updated phase
+    status. Record the change in the same commit as the code change.
 
 ---
 
-## 9. Open Questions
+## 9. Decisions and Open Questions
 
 ### Settled decisions
 
