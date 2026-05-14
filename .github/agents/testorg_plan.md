@@ -142,7 +142,7 @@ rmdir test/concept_tests
 This is a directory move, not a file-by-file copy. After the move, remove the
 now-empty `test/concept_tests/` parent directory if it still exists.
 
-**SGB/LEDA conditional compile files** (only compiled when `-sSDB=` or
+**SDB/LEDA conditional compile files** (only compiled when `-sSDB=` or
 `-sLEDA=` is set) — move as well:
 
 | Source | Destination |
@@ -298,7 +298,6 @@ Create a minimal `Jamfile.v2` in each new subdirectory
 for `test/concepts/Jamfile.v2`:
 
 ```jam
-import path ;
 project : requirements <library>/boost/graph//boost_graph ;
 
 alias concepts_tests :
@@ -435,65 +434,110 @@ be a separate PR.
 
 ### Step C-1 — Rename test files to `*_test.cpp`
 
-Rename every runtime test file that does not already end in `_test.cpp` or
-`_cc.cpp`. Use the table below as a starting point, then run a final search for
-any remaining top-level `test/*.cpp` runtime tests that still use bare or
-hyphenated names before closing the step.
+Rename every current `[ run ... ]` target in `test/Jamfile.v2` that does not
+already end in `_test.cpp` or `_cc.cpp`, except for the `*2` variants deferred
+to Step C-3 and the explicit framework-file exception noted below. The table
+below was verified programmatically against the current Jamfile runtime
+inventory, normalized through the Phase A-3, A-4, and B-4 path moves that must
+already be in place before Phase C starts. If the Jamfile changes before this
+step lands, regenerate the inventory and refresh the table in the same commit.
 
 | Current name | Proposed new name | Notes |
 |---|---|---|
+| `test/adj_list_edge_list_set.cpp` | `test/adj_list_edge_list_set_test.cpp` | |
+| `test/adj_list_loops.cpp` | `test/adj_list_loops_test.cpp` | |
+| `test/bellman-test.cpp` | `test/bellman_test.cpp` | fix hyphen too |
 | `test/bfs.cpp` | `test/bfs_test.cpp` | |
+| `test/bidir_remove_edge.cpp` | `test/bidir_remove_edge_test.cpp` | |
+| `test/bron_kerbosch_all_cliques.cpp` | `test/bron_kerbosch_all_cliques_test.cpp` | |
+| `test/bundled_properties.cpp` | `test/bundled_properties_test.cpp` | |
+| `test/closeness_centrality.cpp` | `test/closeness_centrality_test.cpp` | |
+| `test/clustering_coefficient.cpp` | `test/clustering_coefficient_test.cpp` | |
+| `test/concepts/clustering/compile_louvain_graph_types.cpp` | `test/concepts/clustering/compile_louvain_graph_types_test.cpp` | path assumes Phase A-3 already landed |
+| `test/concepts/clustering/compile_louvain_quality_function.cpp` | `test/concepts/clustering/compile_louvain_quality_function_test.cpp` | path assumes Phase A-3 already landed |
+| `test/cuthill_mckee_ordering.cpp` | `test/cuthill_mckee_ordering_test.cpp` | |
+| `test/cycle_ratio_tests.cpp` | `test/cycle_ratio_test.cpp` | drop redundant plural while normalizing |
+| `test/dag_longest_paths.cpp` | `test/dag_longest_paths_test.cpp` | |
+| `test/degree_centrality.cpp` | `test/degree_centrality_test.cpp` | |
+| `test/delete_edge.cpp` | `test/delete_edge_test.cpp` | |
 | `test/dfs.cpp` | `test/dfs_test.cpp` | |
-| `test/undirected_dfs.cpp` | `test/undirected_dfs_test.cpp` | |
-| `test/undirected_dfs_visitor.cpp` | `test/undirected_dfs_visitor_test.cpp` | |
+| `test/benchmarks/dijkstra_no_color_map_compare.cpp` | `test/benchmarks/dijkstra_no_color_map_compare_test.cpp` | path assumes Phase B-4 already landed |
+| `test/eccentricity.cpp` | `test/eccentricity_test.cpp` | |
+| `test/regressions/finish_edge_bug.cpp` | `test/regressions/finish_edge_bug_test.cpp` | path assumes Phase A-4 already landed |
 | `test/graph.cpp` | `test/graph_test.cpp` | Check for name collision with `graph_test.hpp`; rename header first (already done in A-2) |
+| `test/hawick_circuits.cpp` | `test/hawick_circuits_test.cpp` | |
+| `test/index_graph.cpp` | `test/index_graph_test.cpp` | |
+| `test/isomorphism.cpp` | `test/isomorphism_test.cpp` | |
+| `test/johnson-test.cpp` | `test/johnson_test.cpp` | fix hyphen too |
+| `test/king_ordering.cpp` | `test/king_ordering_test.cpp` | |
+| `test/labeled_graph.cpp` | `test/labeled_graph_test.cpp` | |
+| `test/lvalue_pmap.cpp` | `test/lvalue_pmap_test.cpp` | runtime entry in the Jamfile, not compile-only |
+| `test/max_flow_algorithms_bundled_properties_and_named_params.cpp` | `test/max_flow_algorithms_bundled_properties_and_named_params_test.cpp` | |
+| `test/mean_geodesic.cpp` | `test/mean_geodesic_test.cpp` | |
+| `test/metric_tsp_approx.cpp` | `test/metric_tsp_approx_test.cpp` | |
+| `test/min_degree_empty.cpp` | `test/min_degree_empty_test.cpp` | |
+| `test/rcsp_custom_vertex_id.cpp` | `test/rcsp_custom_vertex_id_test.cpp` | |
+| `test/rcsp_single_solution.cpp` | `test/rcsp_single_solution_test.cpp` | |
+| `test/read_propmap.cpp` | `test/read_propmap_test.cpp` | |
+| `test/sequential_vertex_coloring.cpp` | `test/sequential_vertex_coloring_test.cpp` | |
+| `test/serialize.cpp` | `test/serialize_test.cpp` | |
 | `test/subgraph.cpp` | `test/subgraph_test.cpp` | |
 | `test/subgraph_add.cpp` | `test/subgraph_add_test.cpp` | |
 | `test/subgraph_bundled.cpp` | `test/subgraph_bundled_test.cpp` | |
 | `test/subgraph_props.cpp` | `test/subgraph_props_test.cpp` | |
-| `test/copy.cpp` | `test/copy_test.cpp` | compile-only |
-| `test/swap.cpp` | `test/swap_test.cpp` | compile-only |
-| `test/property_iter.cpp` | `test/property_iter_test.cpp` | compile-only |
-| `test/lvalue_pmap.cpp` | `test/lvalue_pmap_test.cpp` | compile-only |
-| `test/dimacs.cpp` | `test/dimacs_test.cpp` | compile-only |
-| `test/filtered_graph_properties_dijkstra.cpp` | `test/filtered_graph_properties_dijkstra_test.cpp` | compile-only |
-| `test/bellman-test.cpp` | `test/bellman_test.cpp` | fix hyphen too |
-| `test/johnson-test.cpp` | `test/johnson_test.cpp` | fix hyphen too |
-| `test/isomorphism.cpp` | `test/isomorphism_test.cpp` | |
-| `test/hawick_circuits.cpp` | `test/hawick_circuits_test.cpp` | |
 | `test/tiernan_all_cycles.cpp` | `test/tiernan_all_cycles_test.cpp` | |
-| `test/bron_kerbosch_all_cliques.cpp` | `test/bron_kerbosch_all_cliques_test.cpp` | |
-| `test/closeness_centrality.cpp` | `test/closeness_centrality_test.cpp` | |
-| `test/degree_centrality.cpp` | `test/degree_centrality_test.cpp` | |
-| `test/mean_geodesic.cpp` | `test/mean_geodesic_test.cpp` | |
-| `test/eccentricity.cpp` | `test/eccentricity_test.cpp` | |
-| `test/clustering_coefficient.cpp` | `test/clustering_coefficient_test.cpp` | |
-| `test/sequential_vertex_coloring.cpp` | `test/sequential_vertex_coloring_test.cpp` | |
-| `test/cuthill_mckee_ordering.cpp` | `test/cuthill_mckee_ordering_test.cpp` | |
-| `test/king_ordering.cpp` | `test/king_ordering_test.cpp` | |
-| `test/delete_edge.cpp` | `test/delete_edge_test.cpp` | |
-| `test/serialize.cpp` | `test/serialize_test.cpp` | |
-| `test/read_propmap.cpp` | `test/read_propmap_test.cpp` | |
-| `test/generator_test.cpp` | already correct | |
-| `test/dag_longest_paths.cpp` | `test/dag_longest_paths_test.cpp` | |
-| `test/bundled_properties.cpp` | `test/bundled_properties_test.cpp` | |
-| `test/parallel_edges_loops_test.cpp` | already correct | |
-| `test/bidir_remove_edge.cpp` | `test/bidir_remove_edge_test.cpp` | |
-| `test/bidir_vec_remove_edge.cpp` | `test/bidir_vec_remove_edge_test.cpp` | |
-| `test/index_graph.cpp` | `test/index_graph_test.cpp` | |
-| `test/labeled_graph.cpp` | `test/labeled_graph_test.cpp` | |
-| `test/named_vertices_test.cpp` | already correct | |
-| `test/filter_graph_vp_test.cpp` | already correct | |
-| `test/test_graphs.cpp` | `test/test_graphs_test.cpp` (or keep as-is as a framework file) | |
+| `test/undirected_dfs.cpp` | `test/undirected_dfs_test.cpp` | |
+
+Explicit exceptions and deferrals:
+
+- `test/test_graphs.cpp` is a framework-driver exception for now. Keep it as-is
+  unless the suite is reworked enough to justify a clearer driver name.
+- Defer `test/transitive_closure_test2.cpp`,
+  `test/vf2_sub_graph_iso_test_2.cpp`, and
+  `test/weighted_matching_test2.cpp` to Step C-3, which decides whether each
+  file is merged away or renamed to a descriptive `_test.cpp` name.
+- Do not count compile-only or currently unlisted files toward this runtime
+  inventory. In the current tree that includes `copy.cpp`, `swap.cpp`,
+  `property_iter.cpp`, `dimacs.cpp`, `filtered_graph_properties_dijkstra.cpp`,
+  `undirected_dfs_visitor.cpp`, and `bidir_vec_remove_edge.cpp`.
 
 Use `git mv` for each rename. Update all corresponding Jamfile entries.
 
-Before marking this step complete, run a final audit and rename any remaining
-runtime test files that still do not follow the convention. Recommended checks:
+Before marking this step complete, rerun a programmatic audit and confirm that
+the remaining non-`_test.cpp` runtime files are only the explicit exception and
+the Step C-3 deferrals:
 
 ```sh
-rg --files test -g '*.cpp'
-rg -n '\[ (run|compile|compile-fail) ' test/Jamfile.v2
+python3 - <<'PY'
+from pathlib import Path
+import re
+
+jam = Path('test/Jamfile.v2').read_text().splitlines()
+runtime = sorted({
+    m.group(1)
+    for line in jam
+    for m in [re.match(r'\s*\[\s*run\s+([^\s\]]+\.cpp)\b', line)]
+    if m
+})
+
+allowed = {
+    'test_graphs.cpp',
+    'transitive_closure_test2.cpp',
+    'vf2_sub_graph_iso_test_2.cpp',
+    'weighted_matching_test2.cpp',
+}
+
+remaining = [
+    path for path in runtime
+    if not path.endswith('_test.cpp') and not path.endswith('_cc.cpp')
+    and path not in allowed
+]
+
+for path in remaining:
+    print(path)
+
+raise SystemExit(1 if remaining else 0)
+PY
 ```
 
 After renaming, verify no other file in the repo `#include`s a renamed
@@ -573,7 +617,9 @@ The following entries are commented out in the Jamfile:
 
 ## Phase D — CMake parity and CI tiers
 
-Depends on Phase B. Steps D-1 and D-2 can be done in a single PR.
+D-1 depends on Phase C (the CMakeLists uses post-C-1 filenames); D-2 depends
+only on D-1. Steps D-1 and D-2 can be done in a single PR once Phase C is
+complete.
 
 ---
 
@@ -602,6 +648,14 @@ bgl_test(adjacency_matrix_test)
 bgl_test(csr_graph_test)
 bgl_test(grid_graph_test)
 # ... (full list, one line per test)
+
+# ---- Multi-variant tests (graph.cpp and property_iter.cpp) ----
+# bgl_test() cannot express these — write them out explicitly:
+add_executable(graph_1 graph_test.cpp)
+target_compile_definitions(graph_1 PRIVATE TEST=1)
+add_test(NAME graph_1 COMMAND graph_1)
+# repeat for graph_2 .. graph_9 and property_iter_1 .. property_iter_9
+# (property_iter is compile-only: use add_library(... OBJECT ...) with no add_test)
 
 # ---- Concept checks (compile-only) ----
 add_library(adj_list_cc OBJECT concepts/adj_list_cc.cpp)
@@ -764,7 +818,7 @@ complete.
 | C-2 | Migrate bare `assert` to Boost.Test | C-1 | not started | Only in files touched during C |
 | C-3 | Resolve `*2` suffix variants | C-1, E-2 | not started | Preserve distinct behavior before deleting any variant |
 | C-4 | Resolve commented-out tests | Phase B | not started | Do not delete files in this step |
-| D-1 | Create `test/CMakeLists.txt` | Phase B | not started | |
+| D-1 | Create `test/CMakeLists.txt` | Phase C | not started | CMakeLists uses post-C-1 filenames |
 | D-2 | Tag tests by cost | D-1 | not started | |
 | E-1 | Document `TEST=N` intent | none; must precede B-3 | not started | |
 | E-2 | Add coverage comments to `*2` files | none; must precede C-3 | not started | |
