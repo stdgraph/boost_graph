@@ -7,6 +7,27 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //=======================================================================
 
+// TEST=N dispatch — what each value covers.
+//
+// The Jamfile builds this file nine times, once per TEST value. The macro
+// is consumed in common/graph_type.hpp, which selects an adjacency_list
+// instantiation by picking (OutEdgeList, Directedness) from the matrix
+// below:
+//
+//   TEST=1  — adjacency_list<vecS,  vecS, bidirectionalS, …>
+//   TEST=2  — adjacency_list<vecS,  vecS, directedS,      …>
+//   TEST=3  — adjacency_list<vecS,  vecS, undirectedS,    …>
+//   TEST=4  — adjacency_list<listS, listS, bidirectionalS, …>
+//   TEST=5  — adjacency_list<listS, listS, directedS,      …>
+//   TEST=6  — adjacency_list<listS, listS, undirectedS,    …>
+//   TEST=7  — adjacency_list<setS,  setS,  bidirectionalS, …>
+//   TEST=8  — adjacency_list<setS,  setS,  directedS,      …>
+//   TEST=9  — adjacency_list<setS,  setS,  undirectedS,    …>
+//
+// The vertex and edge containers always match in this matrix; varying
+// them independently would multiply the test count without adding
+// coverage that is not already exercised by other graph_*_test.cpp files.
+
 #include <boost/config.hpp>
 
 #include <iostream>
