@@ -439,8 +439,8 @@ void test_github_issue_428()
    using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VertexProps>;
    Graph g0;
    Graph g1;
-   loadGraphFromDOT("github-428-0.dot", g0);
-   loadGraphFromDOT("github-428-1.dot", g1);
+   loadGraphFromDOT("data/github-428-0.dot", g0);
+   loadGraphFromDOT("data/github-428-1.dot", g1);
 
    const bool iso = boost::isomorphism(g0, g1);
    BOOST_TEST(iso);

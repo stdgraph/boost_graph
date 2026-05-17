@@ -16,13 +16,15 @@ import config : requires ;
 
 path-constant TEST_DIR : . ;
 
-path-constant PLANAR_INPUT_FILES : ./planar_input_graphs ;
+path-constant DATA_DIR : ./data ;
 
-path-constant CYCLE_RATIO_INPUT_FILE : ./cycle_ratio_s382.90.dot ;
+path-constant PLANAR_INPUT_FILES : ./data/planar_input_graphs ;
 
-path-constant METIS_INPUT_FILE : ./weighted_graph.gr ;
+path-constant CYCLE_RATIO_INPUT_FILE : ./data/cycle_ratio_s382.90.dot ;
 
-path-constant WEIGHTED_MATCHING_INPUT_FILE : ./weighted_matching.dat ;
+path-constant METIS_INPUT_FILE : ./data/weighted_graph.gr ;
+
+path-constant WEIGHTED_MATCHING_INPUT_FILE : ./data/weighted_matching.dat ;
 
 project : requirements <library>/boost/graph//boost_graph ;
 
@@ -134,7 +136,7 @@ alias graph_test_regular :
     [ run rcsp_custom_vertex_id.cpp ]
     [ run rcsp_single_solution.cpp ]
     [ run is_straight_line_draw_test.cpp ]
-    [ run metric_tsp_approx.cpp /boost/timer//boost_timer : metric_tsp_approx.graph : : ]
+    [ run metric_tsp_approx.cpp /boost/timer//boost_timer : $(DATA_DIR)/metric_tsp_approx.graph : : ]
     [ compile dimacs.cpp ]
     [ run bron_kerbosch_all_cliques.cpp ]
     [ run tiernan_all_cycles.cpp ]
@@ -159,9 +161,9 @@ alias graph_test_regular :
     [ run two_graphs_common_spanning_trees_test.cpp ]
     [ run random_spanning_tree_test.cpp /boost/graph//boost_graph ]
     [ run random_matching_test.cpp : 1000 1020 ]
-    [ run graphml_test.cpp /boost/graph//boost_graph : : "graphml_test.xml" ]
+    [ run graphml_test.cpp /boost/graph//boost_graph : : "$(DATA_DIR)/graphml_test.xml" ]
     [ run mas_test.cpp : $(TEST_DIR) ]
-    [ run stoer_wagner_test.cpp : $(TEST_DIR) ]
+    [ run stoer_wagner_test.cpp : $(DATA_DIR) ]
     [ compile filtered_graph_properties_dijkstra.cpp ]
     [ run vf2_sub_graph_iso_test.cpp ]
     [ run vf2_sub_graph_iso_test_2.cpp ]
