@@ -10,6 +10,12 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //=======================================================================
 
+// Coverage note: this file tests return-value and traversal behaviour of
+// vf2_graph_iso / vf2_subgraph_iso / vf2_subgraph_mono on empty graphs
+// (and empty-vs-non-empty pairs), which is not covered by the primary
+// vf2_sub_graph_iso_test.cpp because that file exercises only graphs
+// with at least one vertex.
+
 #include <iostream>
 #include <boost/core/lightweight_test.hpp>
 #include <boost/graph/adjacency_list.hpp>

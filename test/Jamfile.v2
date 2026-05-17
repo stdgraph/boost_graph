@@ -162,7 +162,7 @@ alias graph_test_regular :
     [ run stoer_wagner_test.cpp : $(DATA_DIR) ]
     [ compile filtered_graph_properties_dijkstra.cpp ]
     [ run vf2_sub_graph_iso_test.cpp ]
-    [ run vf2_sub_graph_iso_test_2.cpp ]
+    [ run vf2_sub_graph_iso_empty_graph_test.cpp ]
     [ run hawick_circuits_test.cpp ]
     [ run successive_shortest_path_nonnegative_weights_test.cpp ]
     [ run cycle_canceling_test.cpp ]
