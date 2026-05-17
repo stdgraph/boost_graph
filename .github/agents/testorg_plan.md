@@ -817,11 +817,11 @@ complete.
 | C-1 | Rename files to `*_test.cpp` | Phase B | complete | commit 715cab00; 43 files renamed across test/, regressions/, concepts/clustering/, benchmarks/; audit passed |
 | C-2 | Migrate bare `assert` to Boost.Test | C-1 | complete | commit 7b0dc440; only cycle_ratio_test.cpp among C-1-touched files used bare assert; replaced with BOOST_TEST (lightweight_test header already in use) |
 | C-3 | Resolve `*2` suffix variants | C-1, E-2 | complete | commits ae7767ee (merged transitive_closure_test2 -> primary as deterministic fixture), 5dee8170 (vf2_sub_graph_iso_test_2 -> vf2_sub_graph_iso_empty_graph_test.cpp), c87c2e2a (weighted_matching_test2 -> weighted_matching_edge_cases_test.cpp). E-2 coverage notes folded into the rename commits. |
-| C-4 | Resolve commented-out tests | Phase B | not started | Do not delete files in this step |
+| C-4 | Resolve commented-out tests | Phase B | complete | commit 41c7150c. adj_list_invalidation.cpp: TODO references commit 1dfbbe2a (runtime crash, disabled deliberately). relaxed_heap_test.cpp: source already removed in commit 19c23ca2 long before this reorg; TODO marker retained in the Jamfile. dijkstra_heap_performance.cpp: handled by B-4. |
 | D-1 | Create `test/CMakeLists.txt` | Phase C | not started | CMakeLists uses post-C-1 filenames |
 | D-2 | Tag tests by cost | D-1 | not started | |
 | E-1 | Document `TEST=N` intent | none; must precede B-3 | complete | commit 1c07297c; mappings verified against common/graph_type.hpp |
 | E-2 | Add coverage comments to `*2` files | none; must precede C-3 | complete | done in-line with the C-3 rename commits (5dee8170, c87c2e2a); the transitive_closure variant was merged so no surviving file needs a note |
-| E-3 | Attach TODO to commented-out tests | C-4 | not started | |
+| E-3 | Attach TODO to commented-out tests | C-4 | complete | done in-line with commit 41c7150c |
 | E-4 | Verify CMakeLists.txt is coverage-friendly | D-1 | not started | |
 | E-5 | Create `.github/coverage/` placeholder | Phase D | not started | |
