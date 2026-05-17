@@ -69,6 +69,12 @@ alias graph_test_regular :
 
     [ run filter_graph_vp_test.cpp ]
     [ run generator_test.cpp ]
+    # graph.cpp is built 9 times with TEST=1..9 to cover the
+    # adjacency_list (OutEdgeList, Directedness) matrix.
+    # See the comment block at the top of graph.cpp for what each value
+    # exercises. A b2 loop helper was considered (step B-3) but rejected
+    # to avoid rebinding graph_test_regular; the explicit entries below
+    # remain canonical.
     [ run graph.cpp : : : <define>TEST=1 : graph_1 ]
     [ run graph.cpp : : : <define>TEST=2 : graph_2 ]
     [ run graph.cpp : : : <define>TEST=3 : graph_3 ]
@@ -100,6 +106,9 @@ alias graph_test_regular :
     [ run adjacency_matrix_test.cpp ]
     [ compile copy.cpp ]
     [ compile swap.cpp ]
+    # property_iter.cpp is compiled 9 times with TEST=1..9 to cover the
+    # adjacency_list (OutEdgeList, Directedness) matrix. See the comment
+    # block at the top of property_iter.cpp for what each value exercises.
     [ compile property_iter.cpp : <define>TEST=1 : property_iter_1 ]
     [ compile property_iter.cpp : <define>TEST=2 : property_iter_2 ]
     [ compile property_iter.cpp : <define>TEST=3 : property_iter_3 ]
