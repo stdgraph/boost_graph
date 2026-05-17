@@ -824,4 +824,4 @@ complete.
 | E-2 | Add coverage comments to `*2` files | none; must precede C-3 | complete | done in-line with the C-3 rename commits (5dee8170, c87c2e2a); the transitive_closure variant was merged so no surviving file needs a note |
 | E-3 | Attach TODO to commented-out tests | C-4 | complete | done in-line with commit 41c7150c |
 | E-4 | Verify CMakeLists.txt is coverage-friendly | D-1 | complete | commit 227af338 satisfies E-4 by construction: one add_executable per test, no file(GLOB), targets link only what they need (optional Boost libs gated and added only to specific targets). |
-| E-5 | Create `.github/coverage/` placeholder | Phase D | not started | |
+| E-5 | Create `.github/coverage/` placeholder | Phase D | complete | commit 6db9b931; .gitkeep + README.md with deferred-implementation note |
