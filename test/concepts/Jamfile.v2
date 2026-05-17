@@ -1,0 +1,20 @@
+project : requirements <library>/boost/graph//boost_graph ;
+
+alias concepts_tests :
+    [ compile adj_list_cc.cpp ]
+    [ compile adj_matrix_cc.cpp ]
+    [ compile bfs_cc.cpp ]
+    [ compile dfs_cc.cpp ]
+    [ compile dijkstra_cc.cpp ]
+    [ compile edge_list_cc.cpp ]
+    [ compile filtered_graph_cc.cpp ]
+    [ compile grid_graph_cc.cpp ]
+    [ compile reverse_graph_cc.cpp ]
+    [ compile vector_graph_cc.cpp ]
+    [ compile graph_concepts.cpp ]
+    [ run clustering/compile_louvain_graph_types_test.cpp ]
+    [ run clustering/compile_louvain_quality_function_test.cpp ]
+    [ compile-fail clustering/compile_fail_louvain_directed.cpp ]
+    [ compile-fail clustering/compile_fail_louvain_quality_function_empty.cpp ]
+    [ compile-fail clustering/compile_fail_louvain_quality_function_invalid.cpp ]
+    ;

@@ -1,0 +1,5 @@
+project : requirements <library>/boost/graph//boost_graph ;
+
+alias regression_tests :
+    [ run finish_edge_bug_test.cpp ]
+    ;

@@ -3,6 +3,6 @@ project : requirements <library>/boost/graph//boost_graph ;
 # Not included in graph_test; run explicitly or via CI benchmark label.
 alias benchmark_tests :
     [ run dijkstra_heap_performance.cpp /boost/timer//boost_timer : 10000 ]
-    [ run dijkstra_no_color_map_compare.cpp : 10000 ]
+    [ run dijkstra_no_color_map_compare_test.cpp : 10000 ]
     [ run random_matching_test.cpp : 1000 1020 ]
     ;
