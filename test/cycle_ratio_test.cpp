@@ -204,7 +204,7 @@ struct my_float2 : boost::mcr_float<>
 
 int main(int argc, char* argv[])
 {
-    assert(argc >= 2);
+    BOOST_TEST(argc >= 2);
     using std::cout;
     using std::endl;
     const double epsilon = 0.005;
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
 
     {
         std::istringstream iss(test_graph1);
-        assert(iss.good());
+        BOOST_TEST(iss.good());
         read_data1(iss, tg);
         max_cr = maximum_cycle_ratio(tg, vim, ew1m, ew2m);
         cout << "Maximum cycle ratio is " << max_cr << endl;
