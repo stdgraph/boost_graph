@@ -43,7 +43,6 @@ alias graph_test_regular :
     [ run labeled_graph_test.cpp ]
 
     [ run transitive_closure_test.cpp /boost/timer//boost_timer ]
-    [ run transitive_closure_test2.cpp ]
 
     #[ run adj_list_invalidation.cpp ]
     [ run adj_list_edge_list_set_test.cpp ]

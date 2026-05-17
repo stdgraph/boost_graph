@@ -129,6 +129,27 @@ bool check_transitive_closure(Graph& g, GraphTC& tc)
     return true;
 }
 
+// Deterministic 5-vertex smoke fixture folded in from the former
+// transitive_closure_test2.cpp (Siek, 2004). Kept here so the small,
+// hand-rolled example case is still exercised as part of this test.
+bool test_small_fixed_graph()
+{
+    typedef adjacency_list<> graph_t;
+    graph_t g(5), g_TC;
+
+    add_edge(0, 2, g);
+    add_edge(1, 0, g);
+    add_edge(1, 2, g);
+    add_edge(1, 4, g);
+    add_edge(3, 0, g);
+    add_edge(3, 2, g);
+    add_edge(4, 2, g);
+    add_edge(4, 3, g);
+
+    transitive_closure(g, g_TC);
+    return check_transitive_closure(g, g_TC);
+}
+
 bool test(int n, double p)
 {
     vector< vector< int > > g1, g1_tc;
@@ -158,6 +179,12 @@ bool test(int n, double p)
 
 int main()
 {
+    if (!test_small_fixed_graph())
+    {
+        cout << "Failed deterministic small-graph fixture." << endl;
+        return 1;
+    }
+
     srand(time(0));
     static class
     {
