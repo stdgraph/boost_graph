@@ -816,12 +816,12 @@ complete.
 | B-4 | Extract benchmarks → `benchmarks/` | A-1 | complete | commit 0c987255; betweenness_centrality_test stays in main suite (arg=100 is vertex count, not iteration count) |
 | C-1 | Rename files to `*_test.cpp` | Phase B | complete | commit 715cab00; 43 files renamed across test/, regressions/, concepts/clustering/, benchmarks/; audit passed |
 | C-2 | Migrate bare `assert` to Boost.Test | C-1 | complete | commit 7b0dc440; only cycle_ratio_test.cpp among C-1-touched files used bare assert; replaced with BOOST_TEST (lightweight_test header already in use) |
-| C-3 | Resolve `*2` suffix variants | C-1, E-2 | not started | Preserve distinct behavior before deleting any variant |
+| C-3 | Resolve `*2` suffix variants | C-1, E-2 | complete | commits ae7767ee (merged transitive_closure_test2 -> primary as deterministic fixture), 5dee8170 (vf2_sub_graph_iso_test_2 -> vf2_sub_graph_iso_empty_graph_test.cpp), c87c2e2a (weighted_matching_test2 -> weighted_matching_edge_cases_test.cpp). E-2 coverage notes folded into the rename commits. |
 | C-4 | Resolve commented-out tests | Phase B | not started | Do not delete files in this step |
 | D-1 | Create `test/CMakeLists.txt` | Phase C | not started | CMakeLists uses post-C-1 filenames |
 | D-2 | Tag tests by cost | D-1 | not started | |
 | E-1 | Document `TEST=N` intent | none; must precede B-3 | complete | commit 1c07297c; mappings verified against common/graph_type.hpp |
-| E-2 | Add coverage comments to `*2` files | none; must precede C-3 | not started | |
+| E-2 | Add coverage comments to `*2` files | none; must precede C-3 | complete | done in-line with the C-3 rename commits (5dee8170, c87c2e2a); the transitive_closure variant was merged so no surviving file needs a note |
 | E-3 | Attach TODO to commented-out tests | C-4 | not started | |
 | E-4 | Verify CMakeLists.txt is coverage-friendly | D-1 | not started | |
 | E-5 | Create `.github/coverage/` placeholder | Phase D | not started | |
