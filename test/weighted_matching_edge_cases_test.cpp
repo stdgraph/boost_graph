@@ -7,6 +7,15 @@
 //
 //=======================================================================
 
+// Coverage note: this file tests maximum_weighted_matching against a
+// hand-curated battery of small graphs targeting algorithmic edge cases
+// (empty graphs, floating-point edge weights, negative edge weights,
+// blossom contraction, and several "tricky" cases known to break naive
+// implementations). The primary weighted_matching_test.cpp instead
+// validates the algorithm against random graphs and a brute-force
+// reference, so the two files exercise complementary aspects of the
+// same algorithm.
+
 #include <boost/graph/maximum_weighted_matching.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
