@@ -44,6 +44,11 @@ alias graph_test_regular :
 
     [ run transitive_closure_test.cpp /boost/timer//boost_timer ]
 
+    # TODO(boostorg/graph#issue): re-enable once the test no longer crashes at
+    # runtime. Disabled in commit 1dfbbe2a because adj_list_invalidation.cpp
+    # deliberately puts the graph in an invalid state to study iterator/
+    # descriptor invalidation; the resulting crash makes it unsuitable for the
+    # regular suite. Source remains at test/adj_list_invalidation.cpp.
     #[ run adj_list_invalidation.cpp ]
     [ run adj_list_edge_list_set_test.cpp ]
     [ run adj_list_loops_test.cpp ]
@@ -63,7 +68,12 @@ alias graph_test_regular :
     [ run disjoint_set_test.cpp ]
     [ run dominator_tree_test.cpp ]
 
-    # Unused and deprecated.
+    # TODO(boostorg/graph#issue): relaxed_heap is deprecated and the test
+    # source was removed in commit 19c23ca2 ("Removing references and testing
+    # to relaxed heap ... due to some testing failures and a lack of use of
+    # relaxed_heap"). Kept here as a marker so the deprecation/removal
+    # decision is visible from the Jamfile; restore from history if the
+    # algorithm is ever revived.
     #[ run relaxed_heap_test.cpp : 5000 15000 ]
 
     [ run filter_graph_vp_test.cpp ]
