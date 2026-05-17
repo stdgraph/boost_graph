@@ -812,7 +812,7 @@ complete.
 | A-5 | Move data files → `data/` | A-1 | complete | commit 691b4e7e; includes github-428-*.dot; isomorphism.cpp hardcoded paths updated |
 | B-1 | Add per-area Jamfiles | Phase A | complete | concepts/Jamfile.v2 and regressions/Jamfile.v2 created |
 | B-2 | Split main Jamfile alias | B-1 | complete | commit a7c577b8 |
-| B-3 | Replace repetitive graph.cpp / property_iter.cpp blocks | B-2, E-1 | not started | Leave explicit entries in place if no safe helper abstraction is validated |
+| B-3 | Replace repetitive graph.cpp / property_iter.cpp blocks | B-2, E-1 | complete | commit 41f0a2af; kept explicit 9 entries per fallback policy, added comment block in Jamfile pointing at source documentation |
 | B-4 | Extract benchmarks → `benchmarks/` | A-1 | not started | |
 | C-1 | Rename files to `*_test.cpp` | Phase B | not started | |
 | C-2 | Migrate bare `assert` to Boost.Test | C-1 | not started | Only in files touched during C |
@@ -820,7 +820,7 @@ complete.
 | C-4 | Resolve commented-out tests | Phase B | not started | Do not delete files in this step |
 | D-1 | Create `test/CMakeLists.txt` | Phase C | not started | CMakeLists uses post-C-1 filenames |
 | D-2 | Tag tests by cost | D-1 | not started | |
-| E-1 | Document `TEST=N` intent | none; must precede B-3 | not started | |
+| E-1 | Document `TEST=N` intent | none; must precede B-3 | complete | commit 1c07297c; mappings verified against common/graph_type.hpp |
 | E-2 | Add coverage comments to `*2` files | none; must precede C-3 | not started | |
 | E-3 | Attach TODO to commented-out tests | C-4 | not started | |
 | E-4 | Verify CMakeLists.txt is coverage-friendly | D-1 | not started | |
