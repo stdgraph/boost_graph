@@ -810,8 +810,8 @@ complete.
 | A-3 | Move concept checks → `concepts/` | A-1, A-2 | complete | commit 876cc7f9 |
 | A-4 | Move regression tests → `regressions/` | A-1 | complete | commit 274840be; github-428-*.dot moved to data/ in A-5 (used by isomorphism.cpp, not finish_edge_bug.cpp) |
 | A-5 | Move data files → `data/` | A-1 | complete | commit 691b4e7e; includes github-428-*.dot; isomorphism.cpp hardcoded paths updated |
-| B-1 | Add per-area Jamfiles | Phase A | not started | |
-| B-2 | Split main Jamfile alias | B-1 | not started | |
+| B-1 | Add per-area Jamfiles | Phase A | complete | concepts/Jamfile.v2 and regressions/Jamfile.v2 created |
+| B-2 | Split main Jamfile alias | B-1 | complete | commit a7c577b8 |
 | B-3 | Replace repetitive graph.cpp / property_iter.cpp blocks | B-2, E-1 | not started | Leave explicit entries in place if no safe helper abstraction is validated |
 | B-4 | Extract benchmarks → `benchmarks/` | A-1 | not started | |
 | C-1 | Rename files to `*_test.cpp` | Phase B | not started | |
