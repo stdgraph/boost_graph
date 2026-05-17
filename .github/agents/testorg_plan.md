@@ -813,7 +813,7 @@ complete.
 | B-1 | Add per-area Jamfiles | Phase A | complete | concepts/Jamfile.v2 and regressions/Jamfile.v2 created |
 | B-2 | Split main Jamfile alias | B-1 | complete | commit a7c577b8 |
 | B-3 | Replace repetitive graph.cpp / property_iter.cpp blocks | B-2, E-1 | complete | commit 41f0a2af; kept explicit 9 entries per fallback policy, added comment block in Jamfile pointing at source documentation |
-| B-4 | Extract benchmarks → `benchmarks/` | A-1 | not started | |
+| B-4 | Extract benchmarks → `benchmarks/` | A-1 | complete | commit 0c987255; betweenness_centrality_test stays in main suite (arg=100 is vertex count, not iteration count) |
 | C-1 | Rename files to `*_test.cpp` | Phase B | not started | |
 | C-2 | Migrate bare `assert` to Boost.Test | C-1 | not started | Only in files touched during C |
 | C-3 | Resolve `*2` suffix variants | C-1, E-2 | not started | Preserve distinct behavior before deleting any variant |
