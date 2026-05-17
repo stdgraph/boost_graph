@@ -5,7 +5,7 @@
 // LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
 #include <iostream>
-#include "typestr.hpp"
+#include "common/typestr.hpp"
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
@@ -15,7 +15,7 @@
 #include <boost/graph/labeled_graph.hpp>
 #include <boost/graph/subgraph.hpp>
 
-#include "test_graph.hpp"
+#include "common/test_graph.hpp"
 
 // This test module is a testing ground to determine if graphs and graph
 // adaptors actually implement the graph concepts correctly.

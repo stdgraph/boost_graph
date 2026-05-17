@@ -4,7 +4,7 @@
 // Boost Software License, Version 1.0 (See accompanying file
 // LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
 
-#include "cycle_test.hpp"
+#include "common/cycle_test.hpp"
 #include <boost/graph/hawick_circuits.hpp>
 #include <iostream>
 

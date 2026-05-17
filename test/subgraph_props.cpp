@@ -7,7 +7,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/subgraph.hpp>
-#include "typestr.hpp"
+#include "common/typestr.hpp"
 
 using namespace boost;
 

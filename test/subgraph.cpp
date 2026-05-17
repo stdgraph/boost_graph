@@ -10,11 +10,11 @@
 #include <boost/graph/subgraph.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/random.hpp>
-#include "graph_test.hpp"
+#include "common/graph_test.hpp"
 #include <boost/graph/iteration_macros.hpp>
 #include <boost/random/mersenne_twister.hpp>
 
-#include "test_graph.hpp"
+#include "common/test_graph.hpp"
 
 // UNDER CONSTRUCTION
 

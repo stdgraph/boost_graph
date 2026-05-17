@@ -16,7 +16,7 @@ clear why or whether the file should be retained.
 #include <string>
 #include <boost/graph/adjacency_list.hpp>
 
-#include "typestr.hpp"
+#include "common/typestr.hpp"
 
 using namespace std;
 using namespace boost;

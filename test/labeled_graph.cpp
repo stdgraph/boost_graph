@@ -15,7 +15,7 @@
 #include <boost/graph/directed_graph.hpp>
 #include <boost/graph/labeled_graph.hpp>
 
-#include "typestr.hpp"
+#include "common/typestr.hpp"
 
 using std::string;
 using namespace boost;

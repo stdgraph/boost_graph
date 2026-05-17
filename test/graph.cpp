@@ -38,7 +38,7 @@ BOOST_INSTALL_PROPERTY(vertex, id);
 BOOST_INSTALL_PROPERTY(edge, id);
 }
 
-#include "graph_type.hpp" // this provides a typedef for Graph
+#include "common/graph_type.hpp" // this provides a typedef for Graph
 
 using namespace boost;
 
