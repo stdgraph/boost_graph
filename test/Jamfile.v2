@@ -36,14 +36,14 @@ alias graph_test_regular :
 
     [ run transitive_closure_test.cpp /boost/timer//boost_timer ]
     [ run transitive_closure_test2.cpp ]
-    [ compile adj_list_cc.cpp ]
+    [ compile concepts/adj_list_cc.cpp ]
 
     #[ run adj_list_invalidation.cpp ]
     [ run adj_list_edge_list_set.cpp ]
     [ run adj_list_loops.cpp ]
-    [ compile adj_matrix_cc.cpp ]
+    [ compile concepts/adj_matrix_cc.cpp ]
     [ run bfs.cpp ]
-    [ compile bfs_cc.cpp ]
+    [ compile concepts/bfs_cc.cpp ]
     [ run bellman-test.cpp ]
     [ run betweenness_centrality_test.cpp : 100 ]
     [ run bidir_remove_edge.cpp ]
@@ -52,8 +52,8 @@ alias graph_test_regular :
     [ run dag_longest_paths.cpp ]
     [ run dfs.cpp ]
     [ run undirected_dfs.cpp ]
-    [ compile dfs_cc.cpp ]
-    [ compile dijkstra_cc.cpp ]
+    [ compile concepts/dfs_cc.cpp ]
+    [ compile concepts/dijkstra_cc.cpp ]
 
     # Performance benchmark
     #[ run dijkstra_heap_performance.cpp /boost/timer//boost_timer : 10000 ]
@@ -65,8 +65,8 @@ alias graph_test_regular :
     # Unused and deprecated.
     #[ run relaxed_heap_test.cpp : 5000 15000 ]
 
-    [ compile edge_list_cc.cpp ]
-    [ compile filtered_graph_cc.cpp ]
+    [ compile concepts/edge_list_cc.cpp ]
+    [ compile concepts/filtered_graph_cc.cpp ]
     [ run filter_graph_vp_test.cpp ]
     [ run generator_test.cpp ]
     [ run graph.cpp : : : <define>TEST=1 : graph_1 ]
@@ -78,7 +78,7 @@ alias graph_test_regular :
     [ run graph.cpp : : : <define>TEST=7 : graph_7 ]
     [ run graph.cpp : : : <define>TEST=8 : graph_8 ]
     [ run graph.cpp : : : <define>TEST=9 : graph_9 ]
-    [ compile graph_concepts.cpp ]
+    [ compile concepts/graph_concepts.cpp ]
     [ run graphviz_test.cpp
             /boost/graph//boost_graph : --log_level=all ]
     [ run metis_test.cpp : $(METIS_INPUT_FILE) ]
@@ -89,7 +89,7 @@ alias graph_test_regular :
           /boost/serialization//boost_serialization
       : : : ]
 
-    [ compile reverse_graph_cc.cpp ]
+    [ compile concepts/reverse_graph_cc.cpp ]
     [ run sequential_vertex_coloring.cpp ]
 
     # TODO: Merge these into a single test framework.
@@ -100,7 +100,7 @@ alias graph_test_regular :
 
     [ run isomorphism.cpp ]
     [ run adjacency_matrix_test.cpp ]
-    [ compile vector_graph_cc.cpp ]
+    [ compile concepts/vector_graph_cc.cpp ]
     [ compile copy.cpp ]
     [ compile swap.cpp ]
     [ compile property_iter.cpp : <define>TEST=1 : property_iter_1 ]
@@ -146,14 +146,14 @@ alias graph_test_regular :
     [ run core_numbers_test.cpp ]
     [ run louvain_quality_function_test.cpp ]
     [ run louvain_clustering_test.cpp ]
-    [ run concept_tests/clustering/compile_louvain_graph_types.cpp ]
-    [ run concept_tests/clustering/compile_louvain_quality_function.cpp ]
-    [ compile-fail concept_tests/clustering/compile_fail_louvain_directed.cpp ]
-    [ compile-fail concept_tests/clustering/compile_fail_louvain_quality_function_empty.cpp ]
-    [ compile-fail concept_tests/clustering/compile_fail_louvain_quality_function_invalid.cpp ]
+    [ run concepts/clustering/compile_louvain_graph_types.cpp ]
+    [ run concepts/clustering/compile_louvain_quality_function.cpp ]
+    [ compile-fail concepts/clustering/compile_fail_louvain_directed.cpp ]
+    [ compile-fail concepts/clustering/compile_fail_louvain_quality_function_empty.cpp ]
+    [ compile-fail concepts/clustering/compile_fail_louvain_quality_function_invalid.cpp ]
     [ run read_propmap.cpp ]
     [ run mcgregor_subgraphs_test.cpp /boost/graph//boost_graph ]
-    [ compile grid_graph_cc.cpp ]
+    [ compile concepts/grid_graph_cc.cpp ]
     [ run grid_graph_test.cpp ]
     [ run incremental_components_test.cpp ]
     [ run two_graphs_common_spanning_trees_test.cpp ]
@@ -205,7 +205,7 @@ if $(SDB)
 {
     local sdb-root = [ path.root [ path.make $(SDB) ] [ path.pwd ] ] ;
 
-    compile stanford_graph_cc.cpp :
+    compile concepts/stanford_graph_cc.cpp :
         <include>$(sdb-root) ;
 }
 
@@ -216,7 +216,7 @@ if $(LEDA)
     local leda-root = [ path.root [ path.make $(LEDA) ] [ path.pwd ] ] ;
     local leda-include = [ path.join $(leda-root) incl ] ;
 
-    compile leda_graph_cc.cpp :
+    compile concepts/leda_graph_cc.cpp :
         <include>$(leda-include) ;
 }
 
