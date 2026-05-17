@@ -805,11 +805,11 @@ complete.
 
 | Step | Title | Depends on | Status | Notes |
 |---|---|---|---|---|
-| A-1 | Create subdirectories | none | not started | |
-| A-2 | Move shared headers → `common/` | A-1 | not started | |
-| A-3 | Move concept checks → `concepts/` | A-1, A-2 | not started | |
-| A-4 | Move regression tests → `regressions/` | A-1 | not started | |
-| A-5 | Move data files → `data/` | A-1 | not started | |
+| A-1 | Create subdirectories | none | complete | Done implicitly by A-2 moves (git tracks no empty dirs) |
+| A-2 | Move shared headers → `common/` | A-1 | complete | commit 5a93569b |
+| A-3 | Move concept checks → `concepts/` | A-1, A-2 | complete | commit 876cc7f9 |
+| A-4 | Move regression tests → `regressions/` | A-1 | complete | commit 274840be; github-428-*.dot moved to data/ in A-5 (used by isomorphism.cpp, not finish_edge_bug.cpp) |
+| A-5 | Move data files → `data/` | A-1 | complete | commit 691b4e7e; includes github-428-*.dot; isomorphism.cpp hardcoded paths updated |
 | B-1 | Add per-area Jamfiles | Phase A | not started | |
 | B-2 | Split main Jamfile alias | B-1 | not started | |
 | B-3 | Replace repetitive graph.cpp / property_iter.cpp blocks | B-2, E-1 | not started | Leave explicit entries in place if no safe helper abstraction is validated |
